@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "functions.h"
 #include "config.h"
+#include "functions.h"
 
 int main() {
 

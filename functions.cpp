@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "functions.h"
 #include "config.h"
+#include "functions.h"
 
 std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath) {
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
