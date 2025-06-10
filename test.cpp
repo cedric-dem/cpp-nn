@@ -19,6 +19,9 @@ int main() {
     std::vector<std::vector<double>>   weights = readWeights("weights.csv");
     std::cout << "=> Finished loading weights, size " << weights.size() << " . " << std::endl;
 
+    std::cout << "===================> Begin evaluation on the test set" << std::endl;
+    evaluate_model(weights, dataset_test);
+
 
     return 0;
 }

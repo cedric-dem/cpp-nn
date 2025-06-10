@@ -5,6 +5,8 @@
 #include <string>
 #include <cstdint>
 #include <random>
+#include <iomanip> 
+
 #include "functions.h"
 
 
@@ -160,3 +162,14 @@ void save_weights(std::vector<std::vector<double>>  model, const std::string& fi
     std::cout << "Finished writing weights" << std::endl;
 }
 
+
+void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset){
+    int good_predictions = 0;
+
+    //for elem in dataset
+    //todo
+
+    double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
+    std::cout << "=> good predictions : "<< good_predictions << "/" << dataset.size()  << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
+
+}
