@@ -178,11 +178,11 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
 
         // prediction
         std::vector<double> raw_data = multiply_input_vector_with_weights(x, current_weights);
-        y_hat_vector = biggest_1_else_0(raw_data);
-        // y_hat_vector = raw_data;
+
+        // y_hat_vector = biggest_1_else_0(raw_data);
         // y_hat_vector = sigmoid(raw_data);
-        //  y_hat_vector = relu(raw_data);
-        //  y_hat_vector = binary_f(raw_data);
+        // y_hat_vector = relu(raw_data);
+        y_hat_vector = f_binary(raw_data);
 
         // if not good (or always ?)
 
