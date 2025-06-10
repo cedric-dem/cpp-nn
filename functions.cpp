@@ -105,7 +105,7 @@ void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, cons
 }
 
 
-void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset_elem){
+void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t>& dataset_elem){
     std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
 
 
@@ -128,7 +128,7 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train, const int epochs){
+std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const int epochs){
     std::vector<std::vector<double>> current_weights = get_random_matrix(10, 784);
 
     const double learning_rate = 0.01;
@@ -163,7 +163,6 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
             // adjust weight
             for (int current_digit = 0 ; current_digit < 10; ++current_digit) {
                 for (int current_weight_index = 0 ; current_weight_index < 784; ++current_weight_index) {
-
                     current_weights[current_digit][current_weight_index]+= learning_rate * (y_vector[current_digit]- y_hat_vector[current_digit]) * x[current_weight_index];
                 }
             }
@@ -174,7 +173,7 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
 
 
 
-void save_weights(std::vector<std::vector<double>>  model, const std::string& filepath){
+void save_weights(const std::vector<std::vector<double>> &model, const std::string& filepath){
     std::ofstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: " << filepath << std::endl;
@@ -196,7 +195,7 @@ void save_weights(std::vector<std::vector<double>>  model, const std::string& fi
 }
 
 
-std::vector<double> multiply_input_vector_with_weights(std::vector<uint8_t> input_data, std::vector<std::vector<double>>  weights){
+std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
     
     size_t num_rows = weights.size();
     size_t num_cols = weights[0].size();
@@ -239,7 +238,7 @@ int index_of_max(const std::vector<double>& output) {
 }
 
 
-int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights){
+int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
     // TODO activation function ?
     std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
 
@@ -248,7 +247,7 @@ int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<doub
     return index_max;
 }
 
-void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset){
+void evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset){
     int good_predictions = 0;
 
     int current_prediction;
