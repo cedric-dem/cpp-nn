@@ -250,7 +250,7 @@ int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std
     return index_max;
 }
 
-void evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
+double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;
@@ -268,4 +268,5 @@ void evaluate_model(const std::vector<std::vector<double>> &weights, const std::
 
     const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
     std::cout << "=> good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
+    return percentage;
 }
