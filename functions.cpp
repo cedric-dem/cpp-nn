@@ -10,6 +10,8 @@
 #include "config.h"
 #include "functions.h"
 
+#include <algorithm>
+
 std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath) {
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
     std::ifstream file(filepath);
@@ -125,7 +127,13 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train) {
+void shuffle_dataset(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::shuffle(dataset.begin(), dataset.end(), gen);
+}
+
+std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train) {
     std::vector<std::vector<double>> current_weights = get_random_matrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
 
     int y;
@@ -137,6 +145,8 @@ std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<s
     std::vector<uint8_t> x;
 
     for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
+        shuffle_dataset(dataset_train);
+
         std::cout << "===> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << std::endl;
 
         // TODO batch instead
