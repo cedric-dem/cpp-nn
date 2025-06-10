@@ -19,4 +19,6 @@ void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::p
 
 int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights);
 
+std::vector<double> multiply_input_vector_with_weights(std::vector<uint8_t> input_data ,std::vector<std::vector<double>>  weights);
+
 #endif
