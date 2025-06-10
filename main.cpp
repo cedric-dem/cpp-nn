@@ -49,14 +49,40 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readCSV(const std::string&
     return data;
 }
 
+
+void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, const uint8_t size_b) {
+    if (data.size() != size_a*size_b) {
+        std::cerr << "Error: vector size is not good" << std::endl;
+        return;
+    }
+    
+    for (size_t row = 0; row < size_a; ++row) {
+        for (size_t col = 0; col < size_b; ++col) {
+            std::cout << static_cast<int>(data[row * size_a + col]) << ' ';
+        }
+        std::cout << '\n';
+    }
+}
+
+
+void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset_elem){
+    std::cout << "======> Displaying sample digit" << dataset_elem.second << std::endl;
+
+    display_matrix(dataset_elem.first, 28, 28);
+}
+
+
 int main() {
 
     std::cout << "===> Begin to load dataset" << std::endl;
+    
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_test = readCSV("dataset/mnist_test.csv");
     std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
-    std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_train = readCSV("dataset/mnist_train.csv");
-    std::cout <<"=> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
+    
+    // std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_train = readCSV("dataset/mnist_train.csv");
+    // std::cout <<"=> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
+    show_dataset_element(dataset_test[12]);
 
     return 0;
 }
