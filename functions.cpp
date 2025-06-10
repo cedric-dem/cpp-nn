@@ -1,16 +1,15 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
 #include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <random>
-#include <iomanip> 
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "functions.h"
 
-
-std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string& filepath) {
+std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath) {
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
     std::ifstream file(filepath);
 
@@ -43,7 +42,7 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
         if (row.size() == 785) {
             // Split into two parts
             uint8_t label = row[0];
-            std::vector input_data(row.begin()+1, row.begin() + 785);
+            std::vector input_data(row.begin() + 1, row.begin() + 785);
             data.emplace_back(std::move(input_data), label);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
@@ -54,7 +53,7 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
     return data;
 }
 
-std::vector<std::vector<double>> readWeights(const std::string& filepath) {
+std::vector<std::vector<double>> readWeights(const std::string &filepath) {
     std::vector<std::vector<double>> data;
     std::ifstream file(filepath);
 
@@ -79,7 +78,7 @@ std::vector<std::vector<double>> readWeights(const std::string& filepath) {
             }
         }
 
-        if (row.size() == 784) {        
+        if (row.size() == 784) {
             data.emplace_back(std::move(row));
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 784)" << std::endl;
@@ -89,12 +88,12 @@ std::vector<std::vector<double>> readWeights(const std::string& filepath) {
     return data;
 }
 
-void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, const uint8_t size_b) {
-    if (data.size() != size_a*size_b) {
+void display_matrix(const std::vector<uint8_t> &data, const uint8_t size_a, const uint8_t size_b) {
+    if (data.size() != size_a * size_b) {
         std::cerr << "Error: vector size is not good" << std::endl;
         return;
     }
-    
+
     for (size_t row = 0; row < size_a; ++row) {
         for (size_t col = 0; col < size_b; ++col) {
             std::cout << static_cast<int>(data[row * size_a + col]) << ' ';
@@ -103,8 +102,7 @@ void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, cons
     }
 }
 
-
-void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t>& dataset_elem){
+void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> &dataset_elem) {
     std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
 
     display_matrix(dataset_elem.first, 28, 28);
@@ -126,7 +124,7 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const int epochs){
+std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const int epochs) {
     std::vector<std::vector<double>> current_weights = get_random_matrix(10, 784);
 
     const double learning_rate = 0.01;
@@ -148,20 +146,20 @@ std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<s
 
             // input data
             y = dataset_train[current_datapoint_index].second;
-            std::fill(y_vector.begin(), y_vector.end(), 0) ;
-            y_vector[y]=1;
+            std::fill(y_vector.begin(), y_vector.end(), 0);
+            y_vector[y] = 1;
 
-            //prediction
+            // prediction
             y_hat = get_prediction(x, current_weights);
             std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
-            y_hat_vector[y_hat]=1;
+            y_hat_vector[y_hat] = 1;
 
             // if not good (or always ?)
 
             // adjust weight
-            for (int current_digit = 0 ; current_digit < 10; ++current_digit) {
-                for (int current_weight_index = 0 ; current_weight_index < 784; ++current_weight_index) {
-                    current_weights[current_digit][current_weight_index]+= learning_rate * (y_vector[current_digit]- y_hat_vector[current_digit]) * x[current_weight_index];
+            for (int current_digit = 0; current_digit < 10; ++current_digit) {
+                for (int current_weight_index = 0; current_weight_index < 784; ++current_weight_index) {
+                    current_weights[current_digit][current_weight_index] += learning_rate * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
                 }
             }
         }
@@ -169,14 +167,14 @@ std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<s
     return current_weights;
 }
 
-void save_weights(const std::vector<std::vector<double>> &model, const std::string& filepath){
+void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
     std::ofstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: " << filepath << std::endl;
         return;
     }
 
-    for (const auto& row : model) {
+    for (const auto &row : model) {
         for (size_t i = 0; i < row.size(); ++i) {
             file << row[i];
             if (i < row.size() - 1) {
@@ -190,7 +188,7 @@ void save_weights(const std::vector<std::vector<double>> &model, const std::stri
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
+std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
 
     const size_t num_rows = weights.size();
     const size_t num_cols = weights[0].size();
@@ -216,8 +214,9 @@ std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t
     return result;
 }
 
-int index_of_max(const std::vector<double>& output) {
-    if (output.empty()) return -1;
+int index_of_max(const std::vector<double> &output) {
+    if (output.empty())
+        return -1;
 
     int maxIndex = 0;
     double maxValue = output[0];
@@ -232,33 +231,31 @@ int index_of_max(const std::vector<double>& output) {
     return maxIndex;
 }
 
-int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
+int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
     // TODO activation function ?
-    const std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
+    const std::vector<double> output = multiply_input_vector_with_weights(input_data, weights);
 
     const int index_max = index_of_max(output);
 
     return index_max;
 }
 
-void evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset){
+void evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;
     int current_real;
 
-
-    //for elem in dataset
+    // for elem in dataset
     for (size_t i = 0; i < dataset.size(); ++i) {
         current_real = dataset[i].second;
         current_prediction = get_prediction(dataset[i].first, weights);
 
-        if (current_real == current_prediction){
-            good_predictions +=1;
+        if (current_real == current_prediction) {
+            good_predictions += 1;
         }
     }
 
     const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
-    std::cout << "=> good predictions : "<< good_predictions << "/" << dataset.size()  << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
-
+    std::cout << "=> good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
 }
