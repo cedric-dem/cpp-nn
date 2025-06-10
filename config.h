@@ -14,4 +14,4 @@ constexpr std::string_view WEIGHTS_PATH = "weights.csv";
 constexpr std::string_view DATASET_TEST_PATH = "dataset/mnist_test.csv";
 constexpr std::string_view DATASET_TRAIN_PATH = "dataset/mnist_train.csv";
 
-#endif //CONFIG_H
+#endif // CONFIG_H
