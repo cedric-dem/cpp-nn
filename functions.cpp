@@ -79,10 +79,10 @@ std::vector<std::vector<double>> readWeights(const std::string &filepath) {
             }
         }
 
-        if (row.size() == 784) {
+        if (row.size() == NN_INPUT_SIZE) {
             data.emplace_back(std::move(row));
         } else {
-            std::cerr << "Invalid row length: " << row.size() << " (expected 784)" << std::endl;
+            std::cerr << "Invalid row length: " << row.size() << " (expected " << NN_INPUT_SIZE << ")" << std::endl;
         }
     }
 
@@ -106,7 +106,7 @@ void display_matrix(const std::vector<uint8_t> &data, const uint8_t size_a, cons
 void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> &dataset_elem) {
     std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
 
-    display_matrix(dataset_elem.first, 28, 28);
+    display_matrix(dataset_elem.first, IMAGE_SIZE, IMAGE_SIZE);
 }
 
 std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
@@ -125,20 +125,19 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const int epochs) {
-    std::vector<std::vector<double>> current_weights = get_random_matrix(10, 784);
+std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train) {
+    std::vector<std::vector<double>> current_weights = get_random_matrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
 
-    const double learning_rate = 0.01;
     int y;
     int y_hat;
 
-    std::vector<uint8_t> y_vector(10, 0);
-    std::vector<uint8_t> y_hat_vector(10, 0);
+    std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
+    std::vector<uint8_t> y_hat_vector(NN_OUTPUT_SIZE, 0);
 
     std::vector<uint8_t> x;
 
-    for (int current_epoch = 1; current_epoch <= epochs; ++current_epoch) {
-        std::cout << "===> current Epoch : " << current_epoch << "/" << epochs << std::endl;
+    for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
+        std::cout << "===> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << std::endl;
 
         // TODO batch instead
         for (int current_datapoint_index = 0; current_datapoint_index < dataset_train.size(); ++current_datapoint_index) {
@@ -158,9 +157,9 @@ std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<s
             // if not good (or always ?)
 
             // adjust weight
-            for (int current_digit = 0; current_digit < 10; ++current_digit) {
-                for (int current_weight_index = 0; current_weight_index < 784; ++current_weight_index) {
-                    current_weights[current_digit][current_weight_index] += learning_rate * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
+            for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+                for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                    current_weights[current_digit][current_weight_index] += LEARNING_RATE * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
                 }
             }
         }
