@@ -8,7 +8,7 @@
 #include "functions.h"
 
 
-std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readCSV(const std::string& filepath) {
+std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string& filepath) {
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
     std::ifstream file(filepath);
 
@@ -52,6 +52,41 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readCSV(const std::string&
     return data;
 }
 
+std::vector<std::vector<double>> readWeights(const std::string& filepath) {
+    std::vector<std::vector<double>> data;
+    std::ifstream file(filepath);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filepath << std::endl;
+        return data;
+    }
+
+    std::string line;
+
+    while (std::getline(file, line)) {
+        std::vector<double> row;
+        std::stringstream ss(line);
+        std::string value;
+
+        while (std::getline(ss, value, ',')) {
+            try {
+                double num = std::stod(value);
+                row.push_back(num);
+            } catch (...) {
+                std::cerr << "Invalid double: " << value << std::endl;
+            }
+        }
+
+        if (row.size() == 784) {        
+            data.emplace_back(std::move(row));
+        } else {
+            std::cerr << "Invalid row length: " << row.size() << " (expected 784)" << std::endl;
+        }
+    }
+
+    return data;
+}
+
 
 void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, const uint8_t size_b) {
     if (data.size() != size_a*size_b) {
@@ -75,8 +110,6 @@ void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset
     display_matrix(dataset_elem.first, 28, 28);
 }
 
-
-
 std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     std::vector<std::vector<double>> mat(a, std::vector<double>(b));
 
@@ -94,7 +127,7 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
 }
 
 std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train, const int epochs){
-    std::vector<std::vector<double>> initial_weights = get_random_matrix(10, 10);
+    std::vector<std::vector<double>> initial_weights = get_random_matrix(10, 784);
 
     for (int i = 1; i <= epochs; ++i) {
         std::cout << "===> current Epoch : " << i << "/" << epochs << std::endl;
