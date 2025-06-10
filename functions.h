@@ -15,7 +15,7 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
 
 void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath);
 
-void evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset);
+double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset);
 
 int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights);
 
