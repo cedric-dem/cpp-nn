@@ -9,6 +9,8 @@ void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset
 
 std::vector<std::vector<double>> get_random_matrix(const int a, const int b);
 
-std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train);
+std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train, const int epochs);
+
+void save_weights(std::vector<std::vector<double>>  model, const std::string& filepath);
 
 #endif
