@@ -9,7 +9,7 @@
 int main() {
 
     std::cout << "===================> Begin to load dataset" << std::endl;
-    const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_test = readDataset(DATASET_TEST_PATH);
+    const std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
     std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
     // show_dataset_element(dataset_test[19]);
