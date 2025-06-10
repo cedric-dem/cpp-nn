@@ -27,4 +27,9 @@ void shuffle_dataset(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &data
 
 void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, std::vector<std::vector<double>> &current_weights);
 
+std::vector<double> biggest_1_else_0(std::vector<double> inp);
+std::vector<double> sigmoid(std::vector<double> inp);
+std::vector<double> f_binary(std::vector<double> inp);
+std::vector<double> relu(std::vector<double> inp);
+
 #endif

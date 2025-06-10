@@ -166,7 +166,7 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
 
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
         std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
-        std::vector<uint8_t> y_hat_vector(NN_OUTPUT_SIZE, 0);
+        std::vector<double> y_hat_vector;
 
         // real answer
         std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
@@ -177,9 +177,12 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
         y_vector[y] = 1;
 
         // prediction
-        int y_hat = get_prediction(x, current_weights);
-        std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
-        y_hat_vector[y_hat] = 1;
+        std::vector<double> raw_data = multiply_input_vector_with_weights(x, current_weights);
+
+        // y_hat_vector = biggest_1_else_0(raw_data);
+        // y_hat_vector = sigmoid(raw_data);
+        // y_hat_vector = relu(raw_data);
+        y_hat_vector = f_binary(raw_data);
 
         // if not good (or always ?)
 
@@ -197,6 +200,52 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
             current_weights[current_digit][current_weight_index] += BATCH_SIZE * delta_matrix[current_digit][current_weight_index];
         }
     }
+}
+
+std::vector<double> biggest_1_else_0(std::vector<double> inp) {
+    std::vector<double> y_hat_vector(NN_OUTPUT_SIZE, 0);
+    const int y_hat = index_of_max(inp);
+    std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
+    y_hat_vector[y_hat] = 1;
+    return y_hat_vector;
+}
+
+std::vector<double> sigmoid(std::vector<double> inp) {
+    std::vector<double> out(NN_OUTPUT_SIZE, 0);
+
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
+    }
+
+    return out;
+}
+
+std::vector<double> relu(std::vector<double> inp) {
+    std::vector<double> out(NN_OUTPUT_SIZE, 0);
+
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        if (inp[i] >= 0) {
+            out[i] = inp[i];
+        } else {
+            out[i] = 0;
+        }
+    }
+
+    return out;
+}
+
+std::vector<double> f_binary(std::vector<double> inp) {
+    std::vector<double> out(NN_OUTPUT_SIZE, 0);
+
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        if (inp[i] >= 0) {
+            out[i] = 1;
+        } else {
+            out[i] = 0;
+        }
+    }
+
+    return out;
 }
 
 void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
