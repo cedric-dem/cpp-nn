@@ -11,7 +11,7 @@ void show_dataset_element(std::pair<std::vector<uint8_t>, uint8_t> dataset_elem)
 
 std::vector<std::vector<double>> get_random_matrix(int a, int b);
 
-std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, int epochs);
+std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train);
 
 void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath);
 
