@@ -43,7 +43,7 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
         if (row.size() == 785) {
             // Split into two parts
             uint8_t label = row[0];
-            std::vector<uint8_t> input_data(row.begin()+1, row.begin() + 785);
+            std::vector input_data(row.begin()+1, row.begin() + 785);
             data.emplace_back(std::move(input_data), label);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
@@ -88,7 +88,6 @@ std::vector<std::vector<double>> readWeights(const std::string& filepath) {
 
     return data;
 }
-
 
 void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, const uint8_t size_b) {
     if (data.size() != size_a*size_b) {
@@ -170,8 +169,6 @@ std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<s
     return current_weights;
 }
 
-
-
 void save_weights(const std::vector<std::vector<double>> &model, const std::string& filepath){
     std::ofstream file(filepath);
     if (!file.is_open()) {
@@ -193,7 +190,6 @@ void save_weights(const std::vector<std::vector<double>> &model, const std::stri
     std::cout << "Finished writing weights" << std::endl;
 }
 
-
 std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
 
     const size_t num_rows = weights.size();
@@ -203,7 +199,7 @@ std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t
         throw std::invalid_argument("Matrix/vector size are incompatible");
     }
 
-    std::vector<double> result(num_rows, 0.0);
+    std::vector result(num_rows, 0.0);
 
     for (size_t i = 0; i < num_rows; ++i) {
         if (weights[i].size() != num_cols) {
@@ -235,7 +231,6 @@ int index_of_max(const std::vector<double>& output) {
 
     return maxIndex;
 }
-
 
 int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
     // TODO activation function ?
