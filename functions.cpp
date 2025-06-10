@@ -131,8 +131,13 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
 std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train, const int epochs){
     std::vector<std::vector<double>> current_weights = get_random_matrix(10, 784);
 
+    const double learning_rate = 0.01;
     int y;
     int y_hat;
+
+    std::vector<uint8_t> y_vector(10, 0);
+    std::vector<uint8_t> y_hat_vector(10, 0);
+
     std::vector<uint8_t> x;
 
     for (int current_epoch = 1; current_epoch <= epochs; ++current_epoch) {
@@ -145,17 +150,25 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
 
             // input data
             y = dataset_train[current_datapoint_index].second;
+            std::fill(y_vector.begin(), y_vector.end(), 0) ;
+            y_vector[y]=1;
 
             //prediction
-            //y_hat = get_prediction()
+            y_hat = get_prediction(x, current_weights);
+            std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
+            y_hat_vector[y_hat]=1;
 
             // if not good (or always ?)
-            // adjust weights
 
+            // adjust weight
+            for (int current_digit = 0 ; current_digit < 10; ++current_digit) {
+                for (int current_weight_index = 0 ; current_weight_index < 784; ++current_weight_index) {
+
+                    current_weights[current_digit][current_weight_index]+= learning_rate * (y_vector[current_digit] - y_hat_vector[current_digit]);
+                }
+            }
         }
-
     }
-
     return current_weights;
 }
 
