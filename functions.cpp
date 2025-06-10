@@ -178,14 +178,14 @@ void adjust_weights(std::vector<std::vector<double>> &current_weights, const std
 std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
 
     std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
-    int current_y;
+    int current_real_output;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
         // input data
         std::vector<uint8_t> x = dataset_train[current_datapoint_index].pixels;
 
         // real answer
-        const int y = dataset_train[current_datapoint_index].label;
+        const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
         std::vector<double> raw_output = multiply_input_vector_with_weights(x, current_weights);
@@ -196,15 +196,15 @@ std::vector<std::vector<double>> get_delta_matrix(const int start_index, const i
 
         // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-            if (y == current_digit) {
-                current_y = 1;
+            if (real_label == current_digit) {
+                current_real_output = 1;
             } else {
-                current_y = 0;
+                current_real_output = 0;
             }
 
             for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
                 // if not good (or always ?)
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_y - processed_output[current_digit]) * x[current_weight_index];
+                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_real_output - processed_output[current_digit]) * x[current_weight_index];
             }
         }
     }
@@ -311,9 +311,7 @@ int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std
     // TODO activation function ?
     const std::vector<double> output = multiply_input_vector_with_weights(input_data, weights);
 
-    const int index_max = index_of_max(output);
-
-    return index_max;
+    return index_of_max(output);
 }
 
 double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset) {
