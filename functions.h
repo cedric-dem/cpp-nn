@@ -21,4 +21,6 @@ int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<doub
 
 std::vector<double> multiply_input_vector_with_weights(std::vector<uint8_t> input_data ,std::vector<std::vector<double>>  weights);
 
+int index_of_max(const std::vector<double>& output);
+
 #endif

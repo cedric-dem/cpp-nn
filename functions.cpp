@@ -189,12 +189,30 @@ std::vector<double> multiply_input_vector_with_weights(std::vector<uint8_t> inpu
     return result;
 }
 
+int index_of_max(const std::vector<double>& output) {
+    if (output.empty()) return -1;
+
+    int maxIndex = 0;
+    double maxValue = output[0];
+
+    for (int i = 1; i < (int)output.size(); ++i) {
+        if (output[i] > maxValue) {
+            maxValue = output[i];
+            maxIndex = i;
+        }
+    }
+
+    return maxIndex;
+}
 
 
 int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights){
-    multiply_input_vector_with_weights(input_data, weights);
-    // TODO
-    return 5;
+
+    std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
+
+    int index_max = index_of_max(output);
+
+    return index_max;
 }
 
 void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset){
