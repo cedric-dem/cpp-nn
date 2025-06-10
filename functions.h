@@ -30,6 +30,5 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
 std::vector<double> biggest_1_else_0(std::vector<double> inp);
 std::vector<double> sigmoid(std::vector<double> inp);
 std::vector<double> f_binary(std::vector<double> inp);
-std::vector<double> relu(std::vector<double> inp);
 
 #endif

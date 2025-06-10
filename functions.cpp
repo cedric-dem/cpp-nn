@@ -181,11 +181,9 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
 
         // y_hat_vector = biggest_1_else_0(raw_data);
         // y_hat_vector = sigmoid(raw_data);
-        // y_hat_vector = relu(raw_data);
         y_hat_vector = f_binary(raw_data);
 
         // if not good (or always ?)
-
         // adjust weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
             for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
@@ -197,7 +195,7 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
     /////////////////////////////////////////////////////////// apply delta matrix
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-            current_weights[current_digit][current_weight_index] += BATCH_SIZE * delta_matrix[current_digit][current_weight_index];
+            current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
         }
     }
 }
@@ -215,20 +213,6 @@ std::vector<double> sigmoid(std::vector<double> inp) {
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
         out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
-    }
-
-    return out;
-}
-
-std::vector<double> relu(std::vector<double> inp) {
-    std::vector<double> out(NN_OUTPUT_SIZE, 0);
-
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        if (inp[i] >= 0) {
-            out[i] = inp[i];
-        } else {
-            out[i] = 0;
-        }
     }
 
     return out;
