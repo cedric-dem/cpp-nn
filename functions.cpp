@@ -162,12 +162,27 @@ void save_weights(std::vector<std::vector<double>>  model, const std::string& fi
     std::cout << "Finished writing weights" << std::endl;
 }
 
+int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights){
+    //TODO
+    return 3;
+}
 
 void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset){
     int good_predictions = 0;
 
+    int current_prediction;
+    int current_real;
+
+
     //for elem in dataset
-    //todo
+    for (size_t i = 0; i < dataset.size(); ++i) {
+        current_real = dataset[i].second;
+        current_prediction = get_prediction(dataset[i].first, weights);
+
+        if (current_real == current_prediction){
+            good_predictions +=1;
+        }
+    }
 
     double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
     std::cout << "=> good predictions : "<< good_predictions << "/" << dataset.size()  << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
