@@ -40,11 +40,11 @@ int main() {
 
     std::cout << "========================================================> Begin to load datasets" << std::endl;
     std::cout << "====> Begin to load dataset train" << std::endl;
-    std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train = readDataset(DATASET_TRAIN_PATH);
+    std::vector<DataPoint> dataset_train = readDataset(DATASET_TRAIN_PATH);
     std::cout << "Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
     std::cout << "====> Begin to load dataset test" << std::endl;
-    const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_test = readDataset(DATASET_TEST_PATH);
+    std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
     std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
     std::vector<double> history_scores(EXECUTIONS_QUANTITY, 0);

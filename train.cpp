@@ -10,7 +10,7 @@
 int main() {
 
     std::cout << "===================> Begin to load dataset" << std::endl;
-    std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train = readDataset(DATASET_TRAIN_PATH);
+    std::vector<DataPoint> dataset_train = readDataset(DATASET_TRAIN_PATH);
     std::cout << "Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
     // show_dataset_element(dataset_train[12]);

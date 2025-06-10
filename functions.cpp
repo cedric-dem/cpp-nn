@@ -12,8 +12,8 @@
 #include "config.h"
 #include "functions.h"
 
-std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath) {
-    std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
+std::vector<DataPoint> readDataset(const std::string &filepath) {
+    std::vector<DataPoint> data;
     std::ifstream file(filepath);
 
     if (!file.is_open()) {
@@ -46,7 +46,11 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
             // Split into two parts
             uint8_t label = row[0];
             std::vector input_data(row.begin() + 1, row.begin() + 785);
-            data.emplace_back(std::move(input_data), label);
+            DataPoint to_add;
+            to_add.label = label;
+
+            to_add.pixels = input_data;
+            data.push_back(to_add);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
         }
@@ -105,10 +109,10 @@ void display_matrix(const std::vector<uint8_t> &data, const uint8_t size_a, cons
     }
 }
 
-void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> &dataset_elem) {
-    std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
+void show_dataset_element(const DataPoint &dataset_elem) {
+    std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.label) << std::endl;
 
-    display_matrix(dataset_elem.first, IMAGE_SIZE, IMAGE_SIZE);
+    display_matrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
 }
 
 std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
@@ -127,13 +131,13 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-void shuffle_dataset(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
+void shuffle_dataset(std::vector<DataPoint> &dataset) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::shuffle(dataset.begin(), dataset.end(), gen);
 }
 
-std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train) {
+std::vector<std::vector<double>> get_trained_model(std::vector<DataPoint> &dataset_train) {
     std::vector<std::vector<double>> current_weights = get_random_matrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
 
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
@@ -153,7 +157,7 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
     return current_weights;
 }
 
-void batch(const int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, std::vector<std::vector<double>> &current_weights) {
+void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, std::vector<std::vector<double>> &current_weights) {
 
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
@@ -171,17 +175,17 @@ void adjust_weights(std::vector<std::vector<double>> &current_weights, const std
     }
 }
 
-std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
+std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
 
     std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
     int current_y;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
         // input data
-        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
+        std::vector<uint8_t> x = dataset_train[current_datapoint_index].pixels;
 
         // real answer
-        const int y = dataset_train[current_datapoint_index].second;
+        const int y = dataset_train[current_datapoint_index].label;
 
         // prediction
         std::vector<double> raw_output = multiply_input_vector_with_weights(x, current_weights);
@@ -312,7 +316,7 @@ int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std
     return index_max;
 }
 
-double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset) {
+double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;
@@ -320,8 +324,9 @@ double evaluate_model(const std::vector<std::vector<double>> &weights, const std
 
     // for elem in dataset
     for (size_t i = 0; i < dataset.size(); ++i) {
-        current_real = dataset[i].second;
-        current_prediction = get_prediction(dataset[i].first, weights);
+        current_real = dataset[i].label;
+
+        current_prediction = get_prediction(dataset[i].pixels, weights);
 
         if (current_real == current_prediction) {
             good_predictions += 1;
