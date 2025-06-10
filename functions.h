@@ -10,33 +10,33 @@ std::vector<DataPoint> readDataset(const std::string &filepath);
 
 std::vector<std::vector<double>> readWeights();
 
-void display_matrix(const std::vector<uint8_t> &data, uint8_t size_a, uint8_t size_b);
+void displayMatrix(const std::vector<uint8_t> &data, uint8_t size_a, uint8_t size_b);
 
-void show_dataset_element(DataPoint dataset_elem);
+void showDatasetElement(DataPoint dataset_elem);
 
-std::vector<std::vector<double>> get_random_matrix(int a, int b);
+std::vector<std::vector<double>> getRandomMatrix(int a, int b);
 
-std::vector<std::vector<double>> get_trained_model(std::vector<DataPoint> &dataset_train);
+std::vector<std::vector<double>> getTrainedModel(std::vector<DataPoint> &dataset_train);
 
-void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath);
+void saveWeights(const std::vector<std::vector<double>> &model, const std::string &filepath);
 
-double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset);
+double evaluateModel(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset);
 
-int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights);
+int getPrediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights);
 
-std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights);
+std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights);
 
-int index_of_max(const std::vector<double> &output);
+int indexOfMax(const std::vector<double> &output);
 
-void shuffle_dataset(std::vector<DataPoint> &dataset);
+void shuffleDataset(std::vector<DataPoint> &dataset);
 
 void batch(int current_batch_index, const std::vector<DataPoint> &dataset_train, std::vector<std::vector<double>> &current_weights);
 
-std::vector<std::vector<double>> get_delta_matrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights);
-void adjust_weights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix);
+std::vector<std::vector<double>> getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights);
+void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix);
 
-std::vector<double> biggest_1_else_0(const std::vector<double> &inp);
+std::vector<double> biggest1Else0(const std::vector<double> &inp);
 std::vector<double> sigmoid(const std::vector<double> &inp);
-std::vector<double> f_binary(const std::vector<double> &inp);
+std::vector<double> fBinary(const std::vector<double> &inp);
 
 #endif

@@ -54,10 +54,10 @@ int main() {
         std::cout << "========> Iteration : " << current_train << std::endl;
 
         std::cout << "====> Begin to train the model" << std::endl;
-        const std::vector<std::vector<double>> model = get_trained_model(dataset_train);
+        const std::vector<std::vector<double>> model = getTrainedModel(dataset_train);
 
         std::cout << "====> Begin evaluation on the test set" << std::endl;
-        history_scores[current_train] = evaluate_model(model, dataset_test);
+        history_scores[current_train] = evaluateModel(model, dataset_test);
     }
 
     std::cout << "========================================================> Finished exec, results : " << std::endl;
