@@ -68,7 +68,7 @@ void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, cons
 
 
 void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset_elem){
-    std::cout << "======> Displaying sample digit" << dataset_elem.second << std::endl;
+    std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
 
     display_matrix(dataset_elem.first, 28, 28);
 }
