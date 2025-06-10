@@ -164,7 +164,7 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
             for (int current_digit = 0 ; current_digit < 10; ++current_digit) {
                 for (int current_weight_index = 0 ; current_weight_index < 784; ++current_weight_index) {
 
-                    current_weights[current_digit][current_weight_index]+= learning_rate * (y_vector[current_digit] - y_hat_vector[current_digit]);
+                    current_weights[current_digit][current_weight_index]+= learning_rate * (y_vector[current_digit]- y_hat_vector[current_digit]) * x[current_weight_index];
                 }
             }
         }
