@@ -108,12 +108,11 @@ void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, cons
 void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t>& dataset_elem){
     std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
 
-
     display_matrix(dataset_elem.first, 28, 28);
 }
 
 std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
-    std::vector<std::vector<double>> mat(a, std::vector<double>(b));
+    std::vector mat(a, std::vector<double>(b));
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -196,9 +195,9 @@ void save_weights(const std::vector<std::vector<double>> &model, const std::stri
 
 
 std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
-    
-    size_t num_rows = weights.size();
-    size_t num_cols = weights[0].size();
+
+    const size_t num_rows = weights.size();
+    const size_t num_cols = weights[0].size();
 
     if (input_data.size() != num_cols) {
         throw std::invalid_argument("Matrix/vector size are incompatible");
@@ -227,7 +226,7 @@ int index_of_max(const std::vector<double>& output) {
     int maxIndex = 0;
     double maxValue = output[0];
 
-    for (int i = 1; i < (int)output.size(); ++i) {
+    for (int i = 1; i < static_cast<int>(output.size()); ++i) {
         if (output[i] > maxValue) {
             maxValue = output[i];
             maxIndex = i;
@@ -240,9 +239,9 @@ int index_of_max(const std::vector<double>& output) {
 
 int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights){
     // TODO activation function ?
-    std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
+    const std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
 
-    int index_max = index_of_max(output);
+    const int index_max = index_of_max(output);
 
     return index_max;
 }
@@ -264,7 +263,7 @@ void evaluate_model(const std::vector<std::vector<double>> &weights, const std::
         }
     }
 
-    double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
+    const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
     std::cout << "=> good predictions : "<< good_predictions << "/" << dataset.size()  << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
 
 }
