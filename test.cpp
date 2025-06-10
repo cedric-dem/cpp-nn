@@ -19,7 +19,7 @@ int main() {
     std::cout << "=> Finished loading weights, size " << weights.size() << " . " << std::endl;
 
     std::cout << "===================> Begin evaluation on the test set" << std::endl;
-    evaluate_model(weights, dataset_test);
+    evaluateModel(weights, dataset_test);
 
     return 0;
 }

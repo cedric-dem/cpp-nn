@@ -95,7 +95,7 @@ std::vector<std::vector<double>> readWeights() {
     return data;
 }
 
-void display_matrix(const std::vector<uint8_t> &data, const uint8_t size_a, const uint8_t size_b) {
+void displayMatrix(const std::vector<uint8_t> &data, const uint8_t size_a, const uint8_t size_b) {
     if (data.size() != size_a * size_b) {
         std::cerr << "Error: vector size is not good" << std::endl;
         return;
@@ -109,13 +109,13 @@ void display_matrix(const std::vector<uint8_t> &data, const uint8_t size_a, cons
     }
 }
 
-void show_dataset_element(const DataPoint &dataset_elem) {
+void showDatasetElement(const DataPoint &dataset_elem) {
     std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.label) << std::endl;
 
-    display_matrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
+    displayMatrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
 }
 
-std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
+std::vector<std::vector<double>> getRandomMatrix(const int a, const int b) {
     std::vector mat(a, std::vector<double>(b));
 
     std::random_device rd;
@@ -131,21 +131,21 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
     return mat;
 }
 
-void shuffle_dataset(std::vector<DataPoint> &dataset) {
+void shuffleDataset(std::vector<DataPoint> &dataset) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::shuffle(dataset.begin(), dataset.end(), gen);
 }
 
-std::vector<std::vector<double>> get_trained_model(std::vector<DataPoint> &dataset_train) {
-    std::vector<std::vector<double>> current_weights = get_random_matrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
+std::vector<std::vector<double>> getTrainedModel(std::vector<DataPoint> &dataset_train) {
+    std::vector<std::vector<double>> current_weights = getRandomMatrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
 
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
     std::cout << "==> N batches : " << number_of_batches << std::endl;
 
     for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
-        shuffle_dataset(dataset_train);
+        shuffleDataset(dataset_train);
 
         std::cout << "=====> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << "<=============" << std::endl;
 
@@ -162,12 +162,12 @@ void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-    const std::vector<std::vector<double>> delta_matrix = get_delta_matrix(start_index, end_index, dataset_train, current_weights);
+    const std::vector<std::vector<double>> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
 
-    adjust_weights(current_weights, delta_matrix);
+    adjustWeights(current_weights, delta_matrix);
 }
 
-void adjust_weights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix) {
+void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix) {
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
             current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
@@ -175,45 +175,45 @@ void adjust_weights(std::vector<std::vector<double>> &current_weights, const std
     }
 }
 
-std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
+std::vector<std::vector<double>> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
 
     std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
-    int current_y;
+    int current_real_output;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
         // input data
         std::vector<uint8_t> x = dataset_train[current_datapoint_index].pixels;
 
         // real answer
-        const int y = dataset_train[current_datapoint_index].label;
+        const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
-        std::vector<double> raw_output = multiply_input_vector_with_weights(x, current_weights);
+        std::vector<double> raw_output = multiplyInputVectorWithWeights(x, current_weights);
 
         // std::vector<double> processed_output = biggest_1_else_0(raw_output);
         // std::vector<double> processed_output = sigmoid(raw_output);
-        std::vector<double> processed_output = f_binary(raw_output);
+        std::vector<double> processed_output = fBinary(raw_output);
 
         // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-            if (y == current_digit) {
-                current_y = 1;
+            if (real_label == current_digit) {
+                current_real_output = 1;
             } else {
-                current_y = 0;
+                current_real_output = 0;
             }
 
             for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
                 // if not good (or always ?)
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_y - processed_output[current_digit]) * x[current_weight_index];
+                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_real_output - processed_output[current_digit]) * x[current_weight_index];
             }
         }
     }
     return delta_matrix;
 }
 
-std::vector<double> biggest_1_else_0(const std::vector<double> &inp) {
+std::vector<double> biggest1Else0(const std::vector<double> &inp) {
     std::vector<double> y_hat_vector(NN_OUTPUT_SIZE, 0);
-    const int y_hat = index_of_max(inp);
+    const int y_hat = indexOfMax(inp);
     std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
     y_hat_vector[y_hat] = 1;
     return y_hat_vector;
@@ -229,7 +229,7 @@ std::vector<double> sigmoid(const std::vector<double> &inp) {
     return out;
 }
 
-std::vector<double> f_binary(const std::vector<double> &inp) {
+std::vector<double> fBinary(const std::vector<double> &inp) {
     std::vector<double> out(NN_OUTPUT_SIZE, 0);
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
@@ -243,7 +243,7 @@ std::vector<double> f_binary(const std::vector<double> &inp) {
     return out;
 }
 
-void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
+void saveWeights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
     std::ofstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: " << filepath << std::endl;
@@ -264,7 +264,7 @@ void save_weights(const std::vector<std::vector<double>> &model, const std::stri
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
+std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
 
     const size_t num_rows = weights.size();
     const size_t num_cols = weights[0].size();
@@ -290,33 +290,31 @@ std::vector<double> multiply_input_vector_with_weights(const std::vector<uint8_t
     return result;
 }
 
-int index_of_max(const std::vector<double> &output) {
+int indexOfMax(const std::vector<double> &output) {
     if (output.empty())
         return -1;
 
-    int maxIndex = 0;
-    double maxValue = output[0];
+    int max_index = 0;
+    double max_value = output[0];
 
     for (int i = 1; i < static_cast<int>(output.size()); ++i) {
-        if (output[i] > maxValue) {
-            maxValue = output[i];
-            maxIndex = i;
+        if (output[i] > max_value) {
+            max_value = output[i];
+            max_index = i;
         }
     }
 
-    return maxIndex;
+    return max_index;
 }
 
-int get_prediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
+int getPrediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
     // TODO activation function ?
-    const std::vector<double> output = multiply_input_vector_with_weights(input_data, weights);
+    const std::vector<double> output = multiplyInputVectorWithWeights(input_data, weights);
 
-    const int index_max = index_of_max(output);
-
-    return index_max;
+    return indexOfMax(output);
 }
 
-double evaluate_model(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset) {
+double evaluateModel(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;
@@ -326,7 +324,7 @@ double evaluate_model(const std::vector<std::vector<double>> &weights, const std
     for (size_t i = 0; i < dataset.size(); ++i) {
         current_real = dataset[i].label;
 
-        current_prediction = get_prediction(dataset[i].pixels, weights);
+        current_prediction = getPrediction(dataset[i].pixels, weights);
 
         if (current_real == current_prediction) {
             good_predictions += 1;
