@@ -129,14 +129,34 @@ std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
 }
 
 std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_train, const int epochs){
-    std::vector<std::vector<double>> initial_weights = get_random_matrix(10, 784);
+    std::vector<std::vector<double>> current_weights = get_random_matrix(10, 784);
 
-    for (int i = 1; i <= epochs; ++i) {
-        std::cout << "===> current Epoch : " << i << "/" << epochs << std::endl;
-        //TODO
+    int y;
+    int y_hat;
+    std::vector<uint8_t> x;
+
+    for (int current_epoch = 1; current_epoch <= epochs; ++current_epoch) {
+        std::cout << "===> current Epoch : " << current_epoch << "/" << epochs << std::endl;
+
+        // TODO batch instead
+        for (int current_datapoint_index = 0; current_datapoint_index < dataset_train.size(); ++current_datapoint_index) {
+            // real answer
+            x = dataset_train[current_datapoint_index].first;
+
+            // input data
+            y = dataset_train[current_datapoint_index].second;
+
+            //prediction
+            //y_hat = get_prediction()
+
+            // if not good (or always ?)
+            // adjust weights
+
+        }
+
     }
 
-    return initial_weights;
+    return current_weights;
 }
 
 
@@ -207,7 +227,7 @@ int index_of_max(const std::vector<double>& output) {
 
 
 int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights){
-
+    // TODO activation function ?
     std::vector<double> output  = multiply_input_vector_with_weights(input_data, weights);
 
     int index_max = index_of_max(output);
