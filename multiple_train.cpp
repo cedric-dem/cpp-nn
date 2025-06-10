@@ -50,7 +50,7 @@ int main() {
     std::vector<double> history_scores(EXECUTIONS_QUANTITY, 0);
 
     std::cout << "========================================================> Begin to train and test" << std::endl;
-    for (int current_train = 0; current_train <= EXECUTIONS_QUANTITY; ++current_train) {
+    for (int current_train = 0; current_train < EXECUTIONS_QUANTITY; ++current_train) {
         std::cout << "========> Iteration : " << current_train << std::endl;
 
         std::cout << "====> Begin to train the model" << std::endl;
@@ -60,7 +60,7 @@ int main() {
         history_scores[current_train] = evaluate_model(model, dataset_test);
     }
 
-    std::cout << "========================================================> Finished exec, results : ";
+    std::cout << "========================================================> Finished exec, results : "<< std::endl;
     showStatistics(history_scores);
 
     return 0;
