@@ -37,7 +37,6 @@ void showStatistics(const std::vector<double> &data) {
 }
 
 int main() {
-    const double executions_quantity = 2;
 
     std::cout << "========================================================> Begin to load datasets" << std::endl;
     std::cout << "====> Begin to load dataset train" << std::endl;
@@ -48,10 +47,10 @@ int main() {
     const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset_test = readDataset(DATASET_TEST_PATH);
     std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
-    std::vector<double> history_scores(executions_quantity, 0);
+    std::vector<double> history_scores(EXECUTIONS_QUANTITY, 0);
 
     std::cout << "========================================================> Begin to train and test" << std::endl;
-    for (int current_train = 0; current_train <= executions_quantity; ++current_train) {
+    for (int current_train = 0; current_train <= EXECUTIONS_QUANTITY; ++current_train) {
         std::cout << "========> Iteration : " << current_train << std::endl;
 
         std::cout << "====> Begin to train the model" << std::endl;
