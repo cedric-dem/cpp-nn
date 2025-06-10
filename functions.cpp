@@ -39,9 +39,9 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readCSV(const std::string&
 
         if (row.size() == 785) {
             // Split into two parts
-            std::vector<uint8_t> first784(row.begin(), row.begin() + 784);
-            uint8_t last = row[784];
-            data.emplace_back(std::move(first784), last);
+            uint8_t label = row[0];
+            std::vector<uint8_t> input_data(row.begin()+1, row.begin() + 785);
+            data.emplace_back(std::move(input_data), label);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
         }
@@ -68,7 +68,8 @@ void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, cons
 
 
 void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset_elem){
-    std::cout << "======> Displaying sample digit" << dataset_elem.second << std::endl;
+    std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.second) << std::endl;
+
 
     display_matrix(dataset_elem.first, 28, 28);
 }

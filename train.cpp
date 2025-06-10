@@ -9,14 +9,11 @@
 int main() {
 
     std::cout << "===> Begin to load dataset" << std::endl;
-    
-    std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_test = readCSV("dataset/mnist_test.csv");
-    std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
-    
-    // std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_train = readCSV("dataset/mnist_train.csv");
-    // std::cout <<"=> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
-    show_dataset_element(dataset_test[12]);
+    std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_train = readCSV("dataset/mnist_train.csv");
+    std::cout << "=> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
+
+    show_dataset_element(dataset_train[12]);
 
     return 0;
 }
