@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -9,8 +11,6 @@
 
 #include "config.h"
 #include "functions.h"
-
-#include <algorithm>
 
 std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath) {
     std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
@@ -136,45 +136,67 @@ void shuffle_dataset(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &data
 std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train) {
     std::vector<std::vector<double>> current_weights = get_random_matrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
 
-    int y;
-    int y_hat;
+    const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
-    std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
-    std::vector<uint8_t> y_hat_vector(NN_OUTPUT_SIZE, 0);
-
-    std::vector<uint8_t> x;
+    std::cout << "==> N batches : " << number_of_batches << std::endl;
 
     for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
         shuffle_dataset(dataset_train);
 
-        std::cout << "===> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << std::endl;
+        std::cout << "=====> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << "<=============" << std::endl;
 
-        // TODO batch instead
-        for (int current_datapoint_index = 0; current_datapoint_index < dataset_train.size(); ++current_datapoint_index) {
-            // real answer
-            x = dataset_train[current_datapoint_index].first;
-
-            // input data
-            y = dataset_train[current_datapoint_index].second;
-            std::fill(y_vector.begin(), y_vector.end(), 0);
-            y_vector[y] = 1;
-
-            // prediction
-            y_hat = get_prediction(x, current_weights);
-            std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
-            y_hat_vector[y_hat] = 1;
-
-            // if not good (or always ?)
-
-            // adjust weight
-            for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-                for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-                    current_weights[current_digit][current_weight_index] += LEARNING_RATE * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
-                }
-            }
+        for (int current_batch_index = 0; current_batch_index < number_of_batches; ++current_batch_index) {
+            // std::cout << "=====> current batch : " << current_batch_index << "/" << number_of_batches << std::endl;
+            batch(current_batch_index, dataset_train, current_weights);
         }
     }
     return current_weights;
+}
+
+void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, std::vector<std::vector<double>> &current_weights) {
+
+    int start_index = current_batch_index * BATCH_SIZE;
+    int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
+
+    // std::cout << "=>  this batch  : from " << start_index << "to " << end_index << std::endl;
+
+    /////////////////////////////////////////////////////////// get delta matrix
+
+    std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
+
+    for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
+        std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
+        std::vector<uint8_t> y_hat_vector(NN_OUTPUT_SIZE, 0);
+
+        // real answer
+        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
+
+        // input data
+        int y = dataset_train[current_datapoint_index].second;
+        std::fill(y_vector.begin(), y_vector.end(), 0);
+        y_vector[y] = 1;
+
+        // prediction
+        int y_hat = get_prediction(x, current_weights);
+        std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
+        y_hat_vector[y_hat] = 1;
+
+        // if not good (or always ?)
+
+        // adjust weight
+        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////// apply delta matrix
+    for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+        for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+            current_weights[current_digit][current_weight_index] += BATCH_SIZE * delta_matrix[current_digit][current_weight_index];
+        }
+    }
 }
 
 void save_weights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
