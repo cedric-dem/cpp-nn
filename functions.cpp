@@ -162,9 +162,39 @@ void save_weights(std::vector<std::vector<double>>  model, const std::string& fi
     std::cout << "Finished writing weights" << std::endl;
 }
 
+
+std::vector<double> multiply_input_vector_with_weights(std::vector<uint8_t> input_data, std::vector<std::vector<double>>  weights){
+    
+    size_t num_rows = weights.size();
+    size_t num_cols = weights[0].size();
+
+    if (input_data.size() != num_cols) {
+        throw std::invalid_argument("Matrix/vector size are incompatible");
+    }
+
+    std::vector<double> result(num_rows, 0.0);
+
+    for (size_t i = 0; i < num_rows; ++i) {
+        if (weights[i].size() != num_cols) {
+            throw std::invalid_argument("Matrix is not a rectangle");
+        }
+
+        double sum = 0.0;
+        for (size_t j = 0; j < num_cols; ++j) {
+            sum += static_cast<double>(input_data[j]) * weights[i][j];
+        }
+        result[i] = sum;
+    }
+
+    return result;
+}
+
+
+
 int get_prediction(std::vector<uint8_t> input_data, std::vector<std::vector<double>> weights){
-    //TODO
-    return 3;
+    multiply_input_vector_with_weights(input_data, weights);
+    // TODO
+    return 5;
 }
 
 void evaluate_model(std::vector<std::vector<double>> weights, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> dataset){
