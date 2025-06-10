@@ -60,7 +60,7 @@ int main() {
         history_scores[current_train] = evaluate_model(model, dataset_test);
     }
 
-    std::cout << "========================================================> Finished exec, results : "<< std::endl;
+    std::cout << "========================================================> Finished exec, results : " << std::endl;
     showStatistics(history_scores);
 
     return 0;
