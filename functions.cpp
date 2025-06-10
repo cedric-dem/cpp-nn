@@ -179,6 +179,7 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
         // prediction
         std::vector<double> raw_data = multiply_input_vector_with_weights(x, current_weights);
         y_hat_vector = biggest_1_else_0(raw_data);
+        // y_hat_vector = raw_data;
         // y_hat_vector = sigmoid(raw_data);
         //  y_hat_vector = relu(raw_data);
         //  y_hat_vector = binary_f(raw_data);
@@ -201,7 +202,7 @@ void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, 
     }
 }
 
-std::vector<double> biggest_one_else_0(std::vector<double> inp) {
+std::vector<double> biggest_1_else_0(std::vector<double> inp) {
     std::vector<double> y_hat_vector(NN_OUTPUT_SIZE, 0);
     const int y_hat = index_of_max(inp);
     std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
