@@ -62,11 +62,6 @@ int main() {
     }
 
     std::cout << "========================================================> Finished exec, results : ";
-    for (int i = 0; i <= executions_quantity; ++i) {
-        std::cout << history_scores[i] << " , ";
-    }
-    std::cout << std::endl;
-
     showStatistics(history_scores);
 
     return 0;
