@@ -153,56 +153,61 @@ std::vector<std::vector<double>> get_trained_model(std::vector<std::pair<std::ve
     return current_weights;
 }
 
-void batch(int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, std::vector<std::vector<double>> &current_weights) {
+void batch(const int current_batch_index, std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, std::vector<std::vector<double>> &current_weights) {
 
-    int start_index = current_batch_index * BATCH_SIZE;
-    int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
+    const int start_index = current_batch_index * BATCH_SIZE;
+    const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-    // std::cout << "=>  this batch  : from " << start_index << "to " << end_index << std::endl;
+    const std::vector<std::vector<double>> delta_matrix = get_delta_matrix(start_index, end_index, dataset_train, current_weights);
 
-    /////////////////////////////////////////////////////////// get delta matrix
+    adjust_weights(current_weights, delta_matrix);
+}
 
-    std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
-
-    for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
-        std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
-        std::vector<double> y_hat_vector;
-
-        // real answer
-        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
-
-        // input data
-        int y = dataset_train[current_datapoint_index].second;
-        std::fill(y_vector.begin(), y_vector.end(), 0);
-        y_vector[y] = 1;
-
-        // prediction
-        std::vector<double> raw_data = multiply_input_vector_with_weights(x, current_weights);
-
-        // y_hat_vector = biggest_1_else_0(raw_data);
-        // y_hat_vector = sigmoid(raw_data);
-        // y_hat_vector = relu(raw_data);
-        y_hat_vector = f_binary(raw_data);
-
-        // if not good (or always ?)
-
-        // adjust weight
-        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
-            }
-        }
-    }
-
-    /////////////////////////////////////////////////////////// apply delta matrix
+void adjust_weights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix) {
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-            current_weights[current_digit][current_weight_index] += BATCH_SIZE * delta_matrix[current_digit][current_weight_index];
+            current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
         }
     }
 }
 
-std::vector<double> biggest_1_else_0(std::vector<double> inp) {
+std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
+
+    std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
+    int current_y;
+    for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
+
+        // input data
+        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
+
+        // real answer
+        const int y = dataset_train[current_datapoint_index].second;
+
+        // prediction
+        std::vector<double> raw_output = multiply_input_vector_with_weights(x, current_weights);
+
+        // std::vector<double> processed_output = biggest_1_else_0(raw_output);
+        // std::vector<double> processed_output = sigmoid(raw_output);
+        std::vector<double> processed_output = f_binary(raw_output);
+
+        // adjust delta weight
+        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+            if (y == current_digit) {
+                current_y = 1;
+            } else {
+                current_y = 0;
+            }
+
+            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                // if not good (or always ?)
+                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_y - processed_output[current_digit]) * x[current_weight_index];
+            }
+        }
+    }
+    return delta_matrix;
+}
+
+std::vector<double> biggest_1_else_0(const std::vector<double> &inp) {
     std::vector<double> y_hat_vector(NN_OUTPUT_SIZE, 0);
     const int y_hat = index_of_max(inp);
     std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
@@ -210,7 +215,7 @@ std::vector<double> biggest_1_else_0(std::vector<double> inp) {
     return y_hat_vector;
 }
 
-std::vector<double> sigmoid(std::vector<double> inp) {
+std::vector<double> sigmoid(const std::vector<double> &inp) {
     std::vector<double> out(NN_OUTPUT_SIZE, 0);
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
@@ -220,21 +225,7 @@ std::vector<double> sigmoid(std::vector<double> inp) {
     return out;
 }
 
-std::vector<double> relu(std::vector<double> inp) {
-    std::vector<double> out(NN_OUTPUT_SIZE, 0);
-
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        if (inp[i] >= 0) {
-            out[i] = inp[i];
-        } else {
-            out[i] = 0;
-        }
-    }
-
-    return out;
-}
-
-std::vector<double> f_binary(std::vector<double> inp) {
+std::vector<double> f_binary(const std::vector<double> &inp) {
     std::vector<double> out(NN_OUTPUT_SIZE, 0);
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
