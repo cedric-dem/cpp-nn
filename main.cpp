@@ -5,8 +5,8 @@
 #include <string>
 #include <cstdint>
 
-std::vector<std::vector<uint8_t>> readCSV(const std::string& filepath) {
-    std::vector<std::vector<uint8_t>> data;
+std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readCSV(const std::string& filepath) {
+    std::vector<std::pair<std::vector<uint8_t>, uint8_t>> data;
     std::ifstream file(filepath);
 
     if (!file.is_open()) {
@@ -36,7 +36,10 @@ std::vector<std::vector<uint8_t>> readCSV(const std::string& filepath) {
         }
 
         if (row.size() == 785) {
-            data.push_back(row);
+            // Split into two parts
+            std::vector<uint8_t> first784(row.begin(), row.begin() + 784);
+            uint8_t last = row[784];
+            data.emplace_back(std::move(first784), last);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
         }
@@ -46,14 +49,14 @@ std::vector<std::vector<uint8_t>> readCSV(const std::string& filepath) {
     return data;
 }
 
-
 int main() {
 
     std::cout << "===> Begin to load dataset" << std::endl;
-    std::vector<std::vector<uint8_t>> dataset_test = readCSV("dataset/mnist_test.csv");
-    std::vector<std::vector<uint8_t>> dataset_train = readCSV("dataset/mnist_train.csv");
+    std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_test = readCSV("dataset/mnist_test.csv");
+    std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
+    std::vector<std::pair<std::vector<uint8_t>, uint8_t>>  dataset_train = readCSV("dataset/mnist_train.csv");
+    std::cout <<"=> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
-    std::cout << "=> Finished. train set size : " << dataset_train.size() << " data points. " << " test set size : " << dataset_test.size() << " rows." << std::endl;
 
     return 0;
 }
