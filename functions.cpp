@@ -76,17 +76,19 @@ void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset
 }
 
 
-std::vector<double> get_random_vector(const int size) {
-    std::vector<double> vec(size);
+
+std::vector<std::vector<double>> get_random_matrix(const int a, const int b) {
+    std::vector<std::vector<double>> mat(a, std::vector<double>(b));
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::normal_distribution<> d(0.0, 1.0);
 
-    for (int i = 0; i < size; ++i) {
-        vec[i] = d(gen);
+    for (int i = 0; i < a; ++i) {
+        for (int j = 0; j < b; ++j) {
+            mat[i][j] = d(gen);
+        }
     }
 
-    return vec;
-
+    return mat;
 }
