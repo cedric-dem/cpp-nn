@@ -32,8 +32,8 @@ void shuffleDataset(std::vector<DataPoint> &dataset);
 
 void batch(int current_batch_index, const std::vector<DataPoint> &dataset_train, std::vector<std::vector<double>> &current_weights);
 
-std::vector<std::vector<double>> getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights);
-void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix);
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights);
+void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>  &delta_matrix);
 
 std::vector<double> biggest1Else0(const std::vector<double> &inp);
 std::vector<double> sigmoid(const std::vector<double> &inp);

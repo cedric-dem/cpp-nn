@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "config.h"
 #include "functions.h"
@@ -162,12 +163,13 @@ void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-    const std::vector<std::vector<double>> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
+
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>  delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
 
     adjustWeights(current_weights, delta_matrix);
 }
 
-void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::vector<std::vector<double>> &delta_matrix) {
+void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>  &delta_matrix) {
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
             current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
@@ -175,9 +177,12 @@ void adjustWeights(std::vector<std::vector<double>> &current_weights, const std:
     }
 }
 
-std::vector<std::vector<double>> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
 
-    std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
+    //double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix{};
+
+
     int current_real_output;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
