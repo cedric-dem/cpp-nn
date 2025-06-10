@@ -5,13 +5,13 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
 
 std::vector<std::vector<double>> readWeights(const std::string& filepath);
 
-void display_matrix(const std::vector<uint8_t>& data, const uint8_t size_a, const uint8_t size_b);
+void display_matrix(const std::vector<uint8_t>& data, uint8_t size_a, uint8_t size_b);
 
-void show_dataset_element(const std::pair<std::vector<uint8_t>, uint8_t> dataset_elem);
+void show_dataset_element(std::pair<std::vector<uint8_t>, uint8_t> dataset_elem);
 
-std::vector<std::vector<double>> get_random_matrix(const int a, const int b);
+std::vector<std::vector<double>> get_random_matrix(int a, int b);
 
-std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const int epochs);
+std::vector<std::vector<double>> get_trained_model(const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, int epochs);
 
 void save_weights(const std::vector<std::vector<double>> &model, const std::string& filepath);
 
