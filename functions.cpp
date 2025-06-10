@@ -174,31 +174,33 @@ void adjust_weights(std::vector<std::vector<double>> &current_weights, const std
 std::vector<std::vector<double>> get_delta_matrix(const int start_index, const int end_index, const std::vector<std::pair<std::vector<uint8_t>, uint8_t>> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
 
     std::vector delta_matrix(NN_OUTPUT_SIZE, std::vector<double>(NN_INPUT_SIZE));
-
+    int current_y;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
-        std::vector<uint8_t> y_vector(NN_OUTPUT_SIZE, 0);
-        std::vector<double> y_hat_vector;
-
-        // real answer
-        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
 
         // input data
+        std::vector<uint8_t> x = dataset_train[current_datapoint_index].first;
+
+        // real answer
         const int y = dataset_train[current_datapoint_index].second;
-        std::fill(y_vector.begin(), y_vector.end(), 0);
-        y_vector[y] = 1;
 
         // prediction
-        std::vector<double> raw_data = multiply_input_vector_with_weights(x, current_weights);
+        std::vector<double> raw_output = multiply_input_vector_with_weights(x, current_weights);
 
-        // y_hat_vector = biggest_1_else_0(raw_data);
-        // y_hat_vector = sigmoid(raw_data);
-        y_hat_vector = f_binary(raw_data);
+        // std::vector<double> processed_output = biggest_1_else_0(raw_output);
+        // std::vector<double> processed_output = sigmoid(raw_output);
+        std::vector<double> processed_output = f_binary(raw_output);
 
-        // if not good (or always ?)
-        // adjust weight
+        // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+            if (y == current_digit) {
+                current_y = 1;
+            } else {
+                current_y = 0;
+            }
+
             for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (y_vector[current_digit] - y_hat_vector[current_digit]) * x[current_weight_index];
+                // if not good (or always ?)
+                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_y - processed_output[current_digit]) * x[current_weight_index];
             }
         }
     }
