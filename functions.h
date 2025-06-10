@@ -3,7 +3,7 @@
 
 std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::string &filepath);
 
-std::vector<std::vector<double>> readWeights(const std::string &filepath);
+std::vector<std::vector<double>> readWeights();
 
 void display_matrix(const std::vector<uint8_t> &data, uint8_t size_a, uint8_t size_b);
 

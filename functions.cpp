@@ -54,12 +54,12 @@ std::vector<std::pair<std::vector<uint8_t>, uint8_t>> readDataset(const std::str
     return data;
 }
 
-std::vector<std::vector<double>> readWeights(const std::string &filepath) {
+std::vector<std::vector<double>> readWeights() {
     std::vector<std::vector<double>> data;
-    std::ifstream file(filepath);
+    std::ifstream file(WEIGHTS_PATH);
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filepath << std::endl;
+        std::cerr << "Failed to open file: " << WEIGHTS_PATH << std::endl;
         return data;
     }
 
