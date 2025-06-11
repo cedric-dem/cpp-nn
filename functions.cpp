@@ -299,11 +299,24 @@ int getPrediction(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights) {
     return indexOfMax(output);
 }
 
-double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &dataset) {
+void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> &data, const int dataset_size) {
+    std::cout << "============= Confusion Matrix =============" << std::endl;
+
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        for (size_t j = 0; j < NN_OUTPUT_SIZE; ++j) {
+            std::cout << data[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
     int good_predictions = 0;
 
     int current_prediction;
     int current_real;
+
+    std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> confusion_matrix{};
 
     // for elem in dataset
     for (size_t i = 0; i < dataset.size(); ++i) {
@@ -314,6 +327,12 @@ double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &
         if (current_real == current_prediction) {
             good_predictions += 1;
         }
+
+        confusion_matrix[current_real][current_prediction] += 1;
+    }
+
+    if (show_confusion_matrix) {
+        displayConfusionMatrix(confusion_matrix, static_cast<int>(dataset.size()));
     }
 
     const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
