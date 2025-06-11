@@ -22,8 +22,5 @@ double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &d
 WEIGHT_SHAPE getRandomMatrix();
 int indexOfMax(const NN_OUTPUT_SHAPE &output);
 
-NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp);
 NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp);
-NN_OUTPUT_SHAPE fBinary(const NN_OUTPUT_SHAPE &inp);
-
 #endif
