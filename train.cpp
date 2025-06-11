@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "DataPoint.h"
+#include "NeuralNetwork.h"
 #include "config.h"
 #include "functions.h"
 
@@ -17,10 +19,10 @@ int main() {
     // show_dataset_element(dataset_train[12]);
 
     std::cout << "===================> Begin to train the model" << std::endl;
-    const WEIGHT_SHAPE weights = getTrainedModel(dataset_train);
+    const NeuralNetwork model = getTrainedModel(dataset_train);
 
     std::cout << "===================> Begin to save the weights" << std::endl;
-    saveWeights(weights, "weights.csv");
+    saveWeights(model.getWeights(), "weights.csv");
 
     return 0;
 }
