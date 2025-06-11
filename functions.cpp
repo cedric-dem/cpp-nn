@@ -82,6 +82,36 @@ class NeuralNetwork {
     WEIGHT_SHAPE getWeights() const { return weights; }
 };
 
+NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
+    out[indexOfMax(inp)] = 1;
+    return out;
+}
+
+NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
+
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
+    }
+
+    return out;
+}
+
+NN_OUTPUT_SHAPE fBinary(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
+
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        if (inp[i] >= 0) {
+            out[i] = 1;
+        } else {
+            out[i] = 0;
+        }
+    }
+
+    return out;
+}
+
 std::vector<DataPoint> readDataset(const std::string &filepath) {
     std::vector<DataPoint> data;
     std::ifstream file(filepath);
@@ -223,36 +253,6 @@ WEIGHT_SHAPE getTrainedModel(std::vector<DataPoint> &dataset_train) {
         }
     }
     return this_model.getWeights();
-}
-
-NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp) {
-    NN_OUTPUT_SHAPE out{};
-    out[indexOfMax(inp)] = 1;
-    return out;
-}
-
-NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
-    NN_OUTPUT_SHAPE out{};
-
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
-    }
-
-    return out;
-}
-
-NN_OUTPUT_SHAPE fBinary(const NN_OUTPUT_SHAPE &inp) {
-    NN_OUTPUT_SHAPE out{};
-
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        if (inp[i] >= 0) {
-            out[i] = 1;
-        } else {
-            out[i] = 0;
-        }
-    }
-
-    return out;
 }
 
 void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
