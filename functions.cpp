@@ -194,9 +194,9 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
         // prediction
         std::vector<double> raw_output = multiplyInputVectorWithWeights(x, current_weights);
 
-        // std::vector<double> processed_output = biggest_1_else_0(raw_output);
-        // std::vector<double> processed_output = sigmoid(raw_output);
-        std::vector<double> processed_output = fBinary(raw_output);
+        // std::array<double, NN_OUTPUT_SIZE>  processed_output = biggest_1_else_0(raw_output);
+        //  std::array<double, NN_OUTPUT_SIZE>  processed_output = sigmoid(raw_output);
+        std::array<double, NN_OUTPUT_SIZE> processed_output = fBinary(raw_output);
 
         // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
@@ -215,16 +215,14 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
     return delta_matrix;
 }
 
-std::vector<double> biggest1Else0(const std::vector<double> &inp) {
-    std::vector<double> y_hat_vector(NN_OUTPUT_SIZE, 0);
-    const int y_hat = indexOfMax(inp);
-    std::fill(y_hat_vector.begin(), y_hat_vector.end(), 0);
-    y_hat_vector[y_hat] = 1;
-    return y_hat_vector;
+std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::vector<double> &inp) {
+    std::array<double, NN_OUTPUT_SIZE> out{};
+    out[indexOfMax(inp)] = 1;
+    return out;
 }
 
-std::vector<double> sigmoid(const std::vector<double> &inp) {
-    std::vector<double> out(NN_OUTPUT_SIZE, 0);
+std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::vector<double> &inp) {
+    std::array<double, NN_OUTPUT_SIZE> out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
         out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
@@ -233,8 +231,8 @@ std::vector<double> sigmoid(const std::vector<double> &inp) {
     return out;
 }
 
-std::vector<double> fBinary(const std::vector<double> &inp) {
-    std::vector<double> out(NN_OUTPUT_SIZE, 0);
+std::array<double, NN_OUTPUT_SIZE> fBinary(const std::vector<double> &inp) {
+    std::array<double, NN_OUTPUT_SIZE> out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
         if (inp[i] >= 0) {

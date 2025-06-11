@@ -35,8 +35,8 @@ void batch(int current_batch_index, const std::vector<DataPoint> &dataset_train,
 std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights);
 void adjustWeights(std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &delta_matrix);
 
-std::vector<double> biggest1Else0(const std::vector<double> &inp);
-std::vector<double> sigmoid(const std::vector<double> &inp);
-std::vector<double> fBinary(const std::vector<double> &inp);
+std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::vector<double> &inp);
+std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::vector<double> &inp);
+std::array<double, NN_OUTPUT_SIZE> fBinary(const std::vector<double> &inp);
 
 #endif
