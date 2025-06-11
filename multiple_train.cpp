@@ -45,7 +45,7 @@ int main() {
     std::cout << "Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
     std::cout << "====> Begin to load dataset test" << std::endl;
-    std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
+    const std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
     std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
     std::vector<double> history_scores(EXECUTIONS_QUANTITY, 0);
