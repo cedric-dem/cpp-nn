@@ -63,6 +63,7 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
 
 std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
     std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> data{};
+
     std::ifstream file(WEIGHTS_PATH);
 
     if (!file.is_open()) {
@@ -71,35 +72,27 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
     }
 
     std::string line;
+    size_t row = 0;
 
-    while (std::getline(file, line)) {
-        std::vector<double> row;
+    while (std::getline(file, line) && row < NN_OUTPUT_SIZE) {
         std::stringstream ss(line);
-        std::string value;
+        std::string cell;
+        size_t col = 0;
 
-        while (std::getline(ss, value, ',')) {
+        while (std::getline(ss, cell, ',') && col < NN_INPUT_SIZE) {
             try {
-                double num = std::stod(value);
-                row.push_back(num);
-            } catch (...) {
-                std::cerr << "Invalid double: " << value << std::endl;
+                data[row][col] = std::stod(cell);
+            } catch (const std::invalid_argument &e) {
+                std::cerr << "Error, location ; " << row << " ; " << col << ": '" << cell << "'\n";
+                data[row][col] = 0.0;
             }
+            ++col;
         }
 
-        if (row.size() == NN_INPUT_SIZE) {
-            // data.emplace_back(std::move(row));
-            /*
-            for (int i = 0; i < NN_INPUT_SIZE; i++) {
-                for (int j = 0; j < NN_OUTPUT_SIZE; j++) {
-                    data[i][j] = row[i]; // TODO fix this
-                }
-            }
-            */
-        } else {
-            std::cerr << "Invalid row length: " << row.size() << " (expected " << NN_INPUT_SIZE << ")" << std::endl;
-        }
+        ++row;
     }
 
+    file.close();
     return data;
 }
 
@@ -261,8 +254,6 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
         return;
     }
 
-    /*
-     // TODO fix since its now not possible to get .size()
     for (const auto &row : model) {
         for (size_t i = 0; i < row.size(); ++i) {
             file << row[i];
@@ -272,7 +263,6 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
         }
         file << "\n";
     }
-    */
 
     file.close();
     std::cout << "Finished writing weights" << std::endl;
