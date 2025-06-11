@@ -26,43 +26,39 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
     std::getline(file, line); // ignore header
 
     while (std::getline(file, line)) {
-        std::vector<uint8_t> row;
         std::stringstream ss(line);
         std::string value;
+        std::vector<uint8_t> row;
+        row.reserve(NN_INPUT_SIZE + 1); // label + pixels
 
         while (std::getline(ss, value, ',')) {
             try {
                 unsigned int num = std::stoul(value);
                 if (num > 255) {
-                    std::cerr << "Value out of range: " << num << std::endl;
-                    continue;
+                    std::cerr << "Value not in interval" << num << std::endl;
+                    row.clear();
+                    break;
                 }
                 row.push_back(static_cast<uint8_t>(num));
             } catch (...) {
-                std::cerr << "Invalid integer: " << value << std::endl;
+                std::cerr << "Invalid value " << value << std::endl;
+                row.clear();
+                break;
             }
         }
 
-        if (row.size() == NN_INPUT_SIZE + 1) {
-            // Split into two parts
-
-            DataPoint to_add;
-
-            to_add.label = row[0];
-
-            std::array<uint8_t, NN_INPUT_SIZE> input_data_array{};
-            for (int i = 0; i < NN_INPUT_SIZE; i++) {
-                input_data_array[i] = row[i + 1];
-            }
-            to_add.pixels = input_data_array;
-
-            data.push_back(to_add);
-        } else {
-            std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
+        if (row.size() != NN_INPUT_SIZE + 1) {
+            std::cerr << "Invalid line length " << row.size() << std::endl;
+            continue;
         }
+
+        DataPoint dp;
+        dp.label = row[0];
+        std::copy_n(row.begin() + 1, NN_INPUT_SIZE, dp.pixels.begin());
+
+        data.push_back(dp);
     }
 
-    file.close();
     return data;
 }
 
