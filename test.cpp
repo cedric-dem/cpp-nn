@@ -16,7 +16,7 @@ int main() {
     // show_dataset_element(dataset_test[19]);
 
     std::cout << "===================> Begin to load weights" << std::endl;
-    const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> weights = readWeights();
+    const WEIGHT_SHAPE weights = readWeights();
     std::cout << "=> Finished loading weights, size " << weights.size() << " . " << std::endl;
 
     std::cout << "===================> Begin evaluation on the test set" << std::endl;
