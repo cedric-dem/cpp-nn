@@ -45,12 +45,19 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
 
         if (row.size() == 785) {
             // Split into two parts
-            uint8_t label = row[0];
-            std::vector input_data(row.begin() + 1, row.begin() + 785);
+
             DataPoint to_add;
+            // TODO clean that code
+            uint8_t label = row[0];
+
             to_add.label = label;
 
-            to_add.pixels = input_data;
+            std::array<uint8_t, NN_INPUT_SIZE> input_data_array{};
+            for (int i = 0; i < NN_INPUT_SIZE; i++) {
+                input_data_array[i] = row[i + 1];
+            }
+
+            to_add.pixels = input_data_array;
             data.push_back(to_add);
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
@@ -96,11 +103,7 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
     return data;
 }
 
-void displayMatrix(const std::vector<uint8_t> &data, const uint8_t size_a, const uint8_t size_b) {
-    if (data.size() != size_a * size_b) {
-        std::cerr << "Error: vector size is not good" << std::endl;
-        return;
-    }
+void displayMatrix(const std::array<uint8_t, NN_INPUT_SIZE> &data, const uint8_t size_a, const uint8_t size_b) {
 
     for (size_t row = 0; row < size_a; ++row) {
         for (size_t col = 0; col < size_b; ++col) {
@@ -186,7 +189,7 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
         // input data
-        std::vector<uint8_t> x = dataset_train[current_datapoint_index].pixels;
+        std::array<uint8_t, NN_INPUT_SIZE> x = dataset_train[current_datapoint_index].pixels;
 
         // real answer
         const int real_label = dataset_train[current_datapoint_index].label;
@@ -266,7 +269,7 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
+std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
 
     const size_t num_rows = NN_OUTPUT_SIZE; // TO Verify
     const size_t num_cols = NN_INPUT_SIZE;  // TO verify
@@ -306,7 +309,7 @@ int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output) {
     return max_index;
 }
 
-int getPrediction(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
+int getPrediction(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
     // TODO activation function ?
     const std::array<double, NN_OUTPUT_SIZE> output = multiplyInputVectorWithWeights(input_data, weights);
 
