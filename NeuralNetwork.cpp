@@ -76,4 +76,11 @@ void NeuralNetwork::adjustWeights(const WEIGHT_SHAPE &delta_matrix) {
     }
 }
 
+int NeuralNetwork::getPrediction(const IMAGE_SHAPE &input_data) const {
+    // TODO activation function ?
+    const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data, weights);
+
+    return indexOfMax(output);
+}
+
 WEIGHT_SHAPE NeuralNetwork::getWeights() const { return weights; }
