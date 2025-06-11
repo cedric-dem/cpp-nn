@@ -192,7 +192,7 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
         const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
-        std::vector<double> raw_output = multiplyInputVectorWithWeights(x, current_weights);
+        std::array<double, NN_OUTPUT_SIZE> raw_output = multiplyInputVectorWithWeights(x, current_weights);
 
         // std::array<double, NN_OUTPUT_SIZE>  processed_output = biggest_1_else_0(raw_output);
         //  std::array<double, NN_OUTPUT_SIZE>  processed_output = sigmoid(raw_output);
@@ -215,13 +215,13 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
     return delta_matrix;
 }
 
-std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::vector<double> &inp) {
+std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::array<double, NN_OUTPUT_SIZE> &inp) {
     std::array<double, NN_OUTPUT_SIZE> out{};
     out[indexOfMax(inp)] = 1;
     return out;
 }
 
-std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::vector<double> &inp) {
+std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::array<double, NN_OUTPUT_SIZE> &inp) {
     std::array<double, NN_OUTPUT_SIZE> out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
@@ -231,7 +231,7 @@ std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::vector<double> &inp) {
     return out;
 }
 
-std::array<double, NN_OUTPUT_SIZE> fBinary(const std::vector<double> &inp) {
+std::array<double, NN_OUTPUT_SIZE> fBinary(const std::array<double, NN_OUTPUT_SIZE> &inp) {
     std::array<double, NN_OUTPUT_SIZE> out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
@@ -266,7 +266,7 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
+std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
 
     const size_t num_rows = NN_OUTPUT_SIZE; // TO Verify
     const size_t num_cols = NN_INPUT_SIZE;  // TO verify
@@ -275,7 +275,7 @@ std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &i
         throw std::invalid_argument("Matrix/vector size are incompatible");
     }
 
-    std::vector result(num_rows, 0.0);
+    std::array<double, NN_OUTPUT_SIZE> result{};
 
     for (size_t i = 0; i < num_rows; ++i) {
         if (weights[i].size() != num_cols) {
@@ -292,14 +292,11 @@ std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &i
     return result;
 }
 
-int indexOfMax(const std::vector<double> &output) {
-    if (output.empty())
-        return -1;
-
+int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output) {
     int max_index = 0;
     double max_value = output[0];
 
-    for (int i = 1; i < static_cast<int>(output.size()); ++i) {
+    for (int i = 1; i < NN_OUTPUT_SIZE; ++i) {
         if (output[i] > max_value) {
             max_value = output[i];
             max_index = i;
@@ -311,7 +308,7 @@ int indexOfMax(const std::vector<double> &output) {
 
 int getPrediction(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
     // TODO activation function ?
-    const std::vector<double> output = multiplyInputVectorWithWeights(input_data, weights);
+    const std::array<double, NN_OUTPUT_SIZE> output = multiplyInputVectorWithWeights(input_data, weights);
 
     return indexOfMax(output);
 }
