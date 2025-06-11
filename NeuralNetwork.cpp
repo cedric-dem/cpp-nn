@@ -43,9 +43,7 @@ WEIGHT_SHAPE NeuralNetwork::getDeltaMatrix(const int start_index, const int end_
         const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
-        // NN_OUTPUT_SHAPE  processed_output = biggest_1_else_0(multiplyInputVectorWithWeights(x));
-        // NN_OUTPUT_SHAPE  processed_output = sigmoid(multiplyInputVectorWithWeights(x));
-        NN_OUTPUT_SHAPE processed_output = fBinary(multiplyInputVectorWithWeights(x));
+        NN_OUTPUT_SHAPE processed_output = sigmoid(multiplyInputVectorWithWeights(x));
 
         // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {

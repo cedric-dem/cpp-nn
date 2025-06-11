@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-constexpr double EXECUTIONS_QUANTITY = 2;
+constexpr double EXECUTIONS_QUANTITY = 50;
 
 constexpr int IMAGE_SIZE = 28;
 constexpr int NN_INPUT_SIZE = 784; // 28x28
@@ -12,7 +12,7 @@ using NN_OUTPUT_SHAPE = std::array<double, NN_OUTPUT_SIZE>;
 using IMAGE_SHAPE = std::array<uint8_t, NN_INPUT_SIZE>;
 
 constexpr int BATCH_SIZE = 64;
-constexpr int EPOCHS_NUMBER = 2;
+constexpr int EPOCHS_NUMBER = 3;
 constexpr double LEARNING_RATE = 0.001;
 
 #include <string>
