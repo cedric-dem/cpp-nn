@@ -62,8 +62,8 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
     return data;
 }
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> data{};
+WEIGHT_SHAPE readWeights() {
+    WEIGHT_SHAPE data{};
 
     std::ifstream file(WEIGHTS_PATH);
 
@@ -97,7 +97,7 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
     return data;
 }
 
-void displayMatrix(const std::array<uint8_t, NN_INPUT_SIZE> &data, const uint8_t size_a, const uint8_t size_b) {
+void displayMatrix(const IMAGE_SHAPE &data, const uint8_t size_a, const uint8_t size_b) {
 
     for (size_t row = 0; row < size_a; ++row) {
         for (size_t col = 0; col < size_b; ++col) {
@@ -113,8 +113,8 @@ void showDatasetElement(const DataPoint &dataset_elem) {
     displayMatrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
 }
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getRandomMatrix() {
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> result{};
+WEIGHT_SHAPE getRandomMatrix() {
+    WEIGHT_SHAPE result{};
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -135,9 +135,9 @@ void shuffleDataset(std::vector<DataPoint> &dataset) {
     std::shuffle(dataset.begin(), dataset.end(), gen);
 }
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getTrainedModel(std::vector<DataPoint> &dataset_train) {
+WEIGHT_SHAPE getTrainedModel(std::vector<DataPoint> &dataset_train) {
 
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> current_weights = getRandomMatrix();
+    WEIGHT_SHAPE current_weights = getRandomMatrix();
 
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
@@ -156,17 +156,17 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getTrainedModel(st
     return current_weights;
 }
 
-void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights) {
+void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, WEIGHT_SHAPE &current_weights) {
 
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-    const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
+    const WEIGHT_SHAPE delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
 
     adjustWeights(current_weights, delta_matrix);
 }
 
-void adjustWeights(std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &delta_matrix) {
+void adjustWeights(WEIGHT_SHAPE &current_weights, const WEIGHT_SHAPE &delta_matrix) {
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
             current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
@@ -174,26 +174,26 @@ void adjustWeights(std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>
     }
 }
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights) {
+WEIGHT_SHAPE getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const WEIGHT_SHAPE &current_weights) {
 
     // double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix{};
+    WEIGHT_SHAPE delta_matrix{};
 
     int current_real_output;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
 
         // input data
-        std::array<uint8_t, NN_INPUT_SIZE> x = dataset_train[current_datapoint_index].pixels;
+        IMAGE_SHAPE x = dataset_train[current_datapoint_index].pixels;
 
         // real answer
         const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
-        std::array<double, NN_OUTPUT_SIZE> raw_output = multiplyInputVectorWithWeights(x, current_weights);
+        NN_OUTPUT_SHAPE raw_output = multiplyInputVectorWithWeights(x, current_weights);
 
-        // std::array<double, NN_OUTPUT_SIZE>  processed_output = biggest_1_else_0(raw_output);
-        //  std::array<double, NN_OUTPUT_SIZE>  processed_output = sigmoid(raw_output);
-        std::array<double, NN_OUTPUT_SIZE> processed_output = fBinary(raw_output);
+        // NN_OUTPUT_SHAPE  processed_output = biggest_1_else_0(raw_output);
+        //  NN_OUTPUT_SHAPE  processed_output = sigmoid(raw_output);
+        NN_OUTPUT_SHAPE processed_output = fBinary(raw_output);
 
         // adjust delta weight
         for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
@@ -212,14 +212,14 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(con
     return delta_matrix;
 }
 
-std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::array<double, NN_OUTPUT_SIZE> &inp) {
-    std::array<double, NN_OUTPUT_SIZE> out{};
+NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
     out[indexOfMax(inp)] = 1;
     return out;
 }
 
-std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::array<double, NN_OUTPUT_SIZE> &inp) {
-    std::array<double, NN_OUTPUT_SIZE> out{};
+NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
         out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
@@ -228,8 +228,8 @@ std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::array<double, NN_OUTPUT_SI
     return out;
 }
 
-std::array<double, NN_OUTPUT_SIZE> fBinary(const std::array<double, NN_OUTPUT_SIZE> &inp) {
-    std::array<double, NN_OUTPUT_SIZE> out{};
+NN_OUTPUT_SHAPE fBinary(const NN_OUTPUT_SHAPE &inp) {
+    NN_OUTPUT_SHAPE out{};
 
     for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
         if (inp[i] >= 0) {
@@ -242,7 +242,7 @@ std::array<double, NN_OUTPUT_SIZE> fBinary(const std::array<double, NN_OUTPUT_SI
     return out;
 }
 
-void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &model, const std::string &filepath) {
+void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
     std::ofstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: " << filepath << std::endl;
@@ -263,9 +263,9 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
+NN_OUTPUT_SHAPE multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights) {
 
-    std::array<double, NN_OUTPUT_SIZE> result{};
+    NN_OUTPUT_SHAPE result{};
 
     for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
         double sum = 0.0;
@@ -278,7 +278,7 @@ std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::arr
     return result;
 }
 
-int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output) {
+int indexOfMax(const NN_OUTPUT_SHAPE &output) {
     int max_index = 0;
     double max_value = output[0];
 
@@ -292,14 +292,14 @@ int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output) {
     return max_index;
 }
 
-int getPrediction(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
+int getPrediction(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights) {
     // TODO activation function ?
-    const std::array<double, NN_OUTPUT_SIZE> output = multiplyInputVectorWithWeights(input_data, weights);
+    const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data, weights);
 
     return indexOfMax(output);
 }
 
-double evaluateModel(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights, const std::vector<DataPoint> &dataset) {
+double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;

@@ -1,42 +1,43 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+#include "config.h"
 
 struct DataPoint {
-    std::array<uint8_t, NN_INPUT_SIZE> pixels;
+    IMAGE_SHAPE pixels;
     uint8_t label;
 };
 
 std::vector<DataPoint> readDataset(const std::string &filepath);
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights();
+WEIGHT_SHAPE readWeights();
 
-void displayMatrix(const std::array<uint8_t, NN_INPUT_SIZE> &data, uint8_t size_a, uint8_t size_b);
+void displayMatrix(const IMAGE_SHAPE &data, uint8_t size_a, uint8_t size_b);
 
 void showDatasetElement(DataPoint dataset_elem);
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getRandomMatrix();
+WEIGHT_SHAPE getRandomMatrix();
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getTrainedModel(std::vector<DataPoint> &dataset_train);
+WEIGHT_SHAPE getTrainedModel(std::vector<DataPoint> &dataset_train);
 
-void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &model, const std::string &filepath);
+void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath);
 
-double evaluateModel(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights, const std::vector<DataPoint> &dataset);
+double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &dataset);
 
-int getPrediction(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
+int getPrediction(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights);
 
-std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
+NN_OUTPUT_SHAPE multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights);
 
-int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output);
+int indexOfMax(const NN_OUTPUT_SHAPE &output);
 
 void shuffleDataset(std::vector<DataPoint> &dataset);
 
-void batch(int current_batch_index, const std::vector<DataPoint> &dataset_train, std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights);
+void batch(int current_batch_index, const std::vector<DataPoint> &dataset_train, WEIGHT_SHAPE &current_weights);
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights);
-void adjustWeights(std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &delta_matrix);
+WEIGHT_SHAPE getDeltaMatrix(int start_index, int end_index, const std::vector<DataPoint> &dataset_train, const WEIGHT_SHAPE &current_weights);
+void adjustWeights(WEIGHT_SHAPE &current_weights, const WEIGHT_SHAPE &delta_matrix);
 
-std::array<double, NN_OUTPUT_SIZE> biggest1Else0(const std::array<double, NN_OUTPUT_SIZE> &inp);
-std::array<double, NN_OUTPUT_SIZE> sigmoid(const std::array<double, NN_OUTPUT_SIZE> &inp);
-std::array<double, NN_OUTPUT_SIZE> fBinary(const std::array<double, NN_OUTPUT_SIZE> &inp);
+NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp);
+NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp);
+NN_OUTPUT_SHAPE fBinary(const NN_OUTPUT_SHAPE &inp);
 
 #endif
