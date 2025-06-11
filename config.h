@@ -7,7 +7,9 @@ constexpr int IMAGE_SIZE = 28;
 constexpr int NN_INPUT_SIZE = 784; // 28x28
 constexpr int NN_OUTPUT_SIZE = 10; // 10 digits
 
-// using weight_type = std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>; //TODO
+// using weight_shape = std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>; //TODO
+// using output_shape = std::array<double, NN_OUTPUT_SIZE>  ; //TODO
+// using image_shape = std::array<uint8_t, NN_INPUT_SHAPE>   ; //TODO
 
 constexpr int BATCH_SIZE = 64;
 constexpr int EPOCHS_NUMBER = 10;
