@@ -313,7 +313,11 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
     for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
         std::cout << "   Real   "[i] << " " << "0123456789"[i] << "  ";
         for (size_t j = 0; j < NN_OUTPUT_SIZE; ++j) {
-            std::cout << std::fixed << std::setprecision(2) << 100.0 * static_cast<double>(data[i][j]) / dataset_size << "%   ";
+            if (data[i][j] > 0) {
+                std::cout << std::fixed << std::setprecision(2) << 100.0 * static_cast<double>(data[i][j]) / dataset_size << "%   ";
+            } else {
+                std::cout << "        ";
+            }
         }
         std::cout << std::endl;
     }
