@@ -300,14 +300,24 @@ int getPrediction(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights) {
 }
 
 void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> &data, const int dataset_size) {
-    std::cout << "============= Confusion Matrix =============" << std::endl;
+    std::cout << "=================================== Confusion Matrix ===================================" << std::endl;
 
+    // Display top banner with real answers
+    std::cout << "********************************** Predicted by the model ****************************" << std::endl << "     ";
     for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        std::cout << i << "       ";
+    }
+    std::cout << std::endl;
+
+    // Matrix itself
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        std::cout << "   Real   "[i] << " " << "0123456789"[i] << "  ";
         for (size_t j = 0; j < NN_OUTPUT_SIZE; ++j) {
-            std::cout << data[i][j] << " ";
+            std::cout << std::fixed << std::setprecision(2) << 100.0 * static_cast<double>(data[i][j]) / dataset_size << "%   ";
         }
         std::cout << std::endl;
     }
+    std::cout << "========================================================================================" << std::endl;
 }
 
 double evaluateModel(const WEIGHT_SHAPE &weights, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
