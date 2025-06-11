@@ -1,7 +1,3 @@
-//
-// Created by ced on 11/06/25.
-//
-
 #ifndef NEURALNETWORK_H
 #define NEURALNETWORK_H
 #include "DataPoint.h"

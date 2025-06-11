@@ -240,7 +240,7 @@ int indexOfMax(const NN_OUTPUT_SHAPE &output) {
     return max_index;
 }
 
-int getPrediction(const IMAGE_SHAPE &input_data, const NeuralNetwork model) {
+int getPrediction(const IMAGE_SHAPE &input_data, const NeuralNetwork &model) {
     // TODO activation function ?
     const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data, model.getWeights());
 
@@ -272,7 +272,7 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
     std::cout << "========================================================================================" << std::endl;
 }
 
-double evaluateModel(const NeuralNetwork model_to_test, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
+double evaluateModel(const NeuralNetwork &model_to_test, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
     int good_predictions = 0;
 
     int current_prediction;
