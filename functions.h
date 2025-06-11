@@ -2,7 +2,7 @@
 #define FUNCTIONS_H
 
 struct DataPoint {
-    std::vector<uint8_t> pixels;
+    std::array<uint8_t, NN_INPUT_SIZE> pixels;
     uint8_t label;
 };
 
@@ -10,7 +10,7 @@ std::vector<DataPoint> readDataset(const std::string &filepath);
 
 std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights();
 
-void displayMatrix(const std::vector<uint8_t> &data, uint8_t size_a, uint8_t size_b);
+void displayMatrix(const std::array<uint8_t, NN_INPUT_SIZE> &data, uint8_t size_a, uint8_t size_b);
 
 void showDatasetElement(DataPoint dataset_elem);
 
@@ -22,9 +22,9 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
 
 double evaluateModel(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights, const std::vector<DataPoint> &dataset);
 
-int getPrediction(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
+int getPrediction(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
 
-std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
+std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights);
 
 int indexOfMax(const std::array<double, NN_OUTPUT_SIZE> &output);
 
