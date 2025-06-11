@@ -13,6 +13,75 @@
 #include "config.h"
 #include "functions.h"
 
+class NeuralNetwork {
+  private:
+    WEIGHT_SHAPE weights{};
+
+  public:
+    NeuralNetwork() {
+        // Initialize weights at random
+        weights = getRandomMatrix();
+    }
+
+    void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train) {
+
+        const int start_index = current_batch_index * BATCH_SIZE;
+        const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
+
+        const WEIGHT_SHAPE delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train);
+
+        adjustWeights(delta_matrix);
+    }
+
+    WEIGHT_SHAPE getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train) const {
+
+        // double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
+        WEIGHT_SHAPE delta_matrix{};
+
+        int current_real_output;
+        for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
+
+            // input data
+            IMAGE_SHAPE x = dataset_train[current_datapoint_index].pixels;
+
+            // real answer
+            const int real_label = dataset_train[current_datapoint_index].label;
+
+            // prediction
+            NN_OUTPUT_SHAPE raw_output = multiplyInputVectorWithWeights(x, weights);
+
+            // NN_OUTPUT_SHAPE  processed_output = biggest_1_else_0(raw_output);
+            //  NN_OUTPUT_SHAPE  processed_output = sigmoid(raw_output);
+            NN_OUTPUT_SHAPE processed_output = fBinary(raw_output);
+
+            // adjust delta weight
+            for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+                if (real_label == current_digit) {
+                    current_real_output = 1;
+                } else {
+                    current_real_output = 0;
+                }
+
+                for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                    // if not good (or always ?)
+                    delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_real_output - processed_output[current_digit]) * x[current_weight_index];
+                }
+            }
+        }
+        return delta_matrix;
+    }
+
+    void adjustWeights(const WEIGHT_SHAPE &delta_matrix) {
+        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
+            }
+        }
+    }
+
+    WEIGHT_SHAPE getWeights() const { return weights; }
+};
+
 std::vector<DataPoint> readDataset(const std::string &filepath) {
     std::vector<DataPoint> data;
     std::ifstream file(filepath);
@@ -137,11 +206,11 @@ void shuffleDataset(std::vector<DataPoint> &dataset) {
 
 WEIGHT_SHAPE getTrainedModel(std::vector<DataPoint> &dataset_train) {
 
-    WEIGHT_SHAPE current_weights = getRandomMatrix();
-
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
     std::cout << "==> N batches : " << number_of_batches << std::endl;
+
+    NeuralNetwork this_model = NeuralNetwork();
 
     for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
         shuffleDataset(dataset_train);
@@ -150,66 +219,10 @@ WEIGHT_SHAPE getTrainedModel(std::vector<DataPoint> &dataset_train) {
 
         for (int current_batch_index = 0; current_batch_index < number_of_batches; ++current_batch_index) {
             // std::cout << "=====> current batch : " << current_batch_index << "/" << number_of_batches << std::endl;
-            batch(current_batch_index, dataset_train, current_weights);
+            this_model.batch(current_batch_index, dataset_train);
         }
     }
-    return current_weights;
-}
-
-void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, WEIGHT_SHAPE &current_weights) {
-
-    const int start_index = current_batch_index * BATCH_SIZE;
-    const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
-
-    const WEIGHT_SHAPE delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
-
-    adjustWeights(current_weights, delta_matrix);
-}
-
-void adjustWeights(WEIGHT_SHAPE &current_weights, const WEIGHT_SHAPE &delta_matrix) {
-    for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-        for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-            current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
-        }
-    }
-}
-
-WEIGHT_SHAPE getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const WEIGHT_SHAPE &current_weights) {
-
-    // double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
-    WEIGHT_SHAPE delta_matrix{};
-
-    int current_real_output;
-    for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
-
-        // input data
-        IMAGE_SHAPE x = dataset_train[current_datapoint_index].pixels;
-
-        // real answer
-        const int real_label = dataset_train[current_datapoint_index].label;
-
-        // prediction
-        NN_OUTPUT_SHAPE raw_output = multiplyInputVectorWithWeights(x, current_weights);
-
-        // NN_OUTPUT_SHAPE  processed_output = biggest_1_else_0(raw_output);
-        //  NN_OUTPUT_SHAPE  processed_output = sigmoid(raw_output);
-        NN_OUTPUT_SHAPE processed_output = fBinary(raw_output);
-
-        // adjust delta weight
-        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-            if (real_label == current_digit) {
-                current_real_output = 1;
-            } else {
-                current_real_output = 0;
-            }
-
-            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-                // if not good (or always ?)
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_real_output - processed_output[current_digit]) * x[current_weight_index];
-            }
-        }
-    }
-    return delta_matrix;
+    return this_model.getWeights();
 }
 
 NN_OUTPUT_SHAPE biggest1Else0(const NN_OUTPUT_SHAPE &inp) {
