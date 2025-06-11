@@ -45,7 +45,7 @@ WEIGHT_SHAPE NeuralNetwork::getDeltaMatrix(const int start_index, const int end_
         const int real_label = dataset_train[current_datapoint_index].label;
 
         // prediction
-        NN_OUTPUT_SHAPE raw_output = multiplyInputVectorWithWeights(x, weights);
+        NN_OUTPUT_SHAPE raw_output = multiplyInputVectorWithWeights(x);
 
         // NN_OUTPUT_SHAPE  processed_output = biggest_1_else_0(raw_output);
         //  NN_OUTPUT_SHAPE  processed_output = sigmoid(raw_output);
@@ -76,9 +76,24 @@ void NeuralNetwork::adjustWeights(const WEIGHT_SHAPE &delta_matrix) {
     }
 }
 
+NN_OUTPUT_SHAPE NeuralNetwork::multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data) const {
+
+    NN_OUTPUT_SHAPE result{};
+
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        double sum = 0.0;
+        for (size_t j = 0; j < NN_INPUT_SIZE; ++j) {
+            sum += static_cast<double>(input_data[j]) * weights[i][j];
+        }
+        result[i] = sum;
+    }
+
+    return result;
+}
+
 int NeuralNetwork::getPrediction(const IMAGE_SHAPE &input_data) const {
     // TODO activation function ?
-    const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data, weights);
+    const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data);
 
     return indexOfMax(output);
 }

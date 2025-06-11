@@ -15,6 +15,7 @@ class NeuralNetwork {
     void adjustWeights(const WEIGHT_SHAPE &delta_matrix);
     WEIGHT_SHAPE getWeights() const;
     int getPrediction(const IMAGE_SHAPE &input_data) const;
+    NN_OUTPUT_SHAPE multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data) const;
 };
 
 #endif // NEURALNETWORK_H
