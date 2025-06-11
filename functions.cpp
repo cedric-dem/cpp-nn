@@ -26,45 +26,39 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
     std::getline(file, line); // ignore header
 
     while (std::getline(file, line)) {
-        std::vector<uint8_t> row;
         std::stringstream ss(line);
         std::string value;
+        std::vector<uint8_t> row;
+        row.reserve(NN_INPUT_SIZE + 1); // label + pixels
 
         while (std::getline(ss, value, ',')) {
             try {
                 unsigned int num = std::stoul(value);
                 if (num > 255) {
-                    std::cerr << "Value out of range: " << num << std::endl;
-                    continue;
+                    std::cerr << "Value not in interval" << num << std::endl;
+                    row.clear();
+                    break;
                 }
                 row.push_back(static_cast<uint8_t>(num));
             } catch (...) {
-                std::cerr << "Invalid integer: " << value << std::endl;
+                std::cerr << "Invalid value " << value << std::endl;
+                row.clear();
+                break;
             }
         }
 
-        if (row.size() == 785) {
-            // Split into two parts
-
-            DataPoint to_add;
-            // TODO clean that code
-            uint8_t label = row[0];
-
-            to_add.label = label;
-
-            std::array<uint8_t, NN_INPUT_SIZE> input_data_array{};
-            for (int i = 0; i < NN_INPUT_SIZE; i++) {
-                input_data_array[i] = row[i + 1];
-            }
-
-            to_add.pixels = input_data_array;
-            data.push_back(to_add);
-        } else {
-            std::cerr << "Invalid row length: " << row.size() << " (expected 785)" << std::endl;
+        if (row.size() != NN_INPUT_SIZE + 1) {
+            std::cerr << "Invalid line length " << row.size() << std::endl;
+            continue;
         }
+
+        DataPoint dp;
+        dp.label = row[0];
+        std::copy_n(row.begin() + 1, NN_INPUT_SIZE, dp.pixels.begin());
+
+        data.push_back(dp);
     }
 
-    file.close();
     return data;
 }
 
@@ -126,8 +120,8 @@ std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getRandomMatrix() 
     std::mt19937 gen(rd());
     std::normal_distribution<> d(0.0, 1.0);
 
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {    // TO verify
-        for (int j = 0; j < NN_INPUT_SIZE; ++j) { // TO verify
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        for (int j = 0; j < NN_INPUT_SIZE; ++j) {
             result[i][j] = d(gen);
         }
     }
@@ -167,7 +161,7 @@ void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
+    const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
 
     adjustWeights(current_weights, delta_matrix);
 }
@@ -271,22 +265,11 @@ void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_S
 
 std::array<double, NN_OUTPUT_SIZE> multiplyInputVectorWithWeights(const std::array<uint8_t, NN_INPUT_SIZE> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
 
-    const size_t num_rows = NN_OUTPUT_SIZE; // TO Verify
-    const size_t num_cols = NN_INPUT_SIZE;  // TO verify
-
-    if (input_data.size() != num_cols) {
-        throw std::invalid_argument("Matrix/vector size are incompatible");
-    }
-
     std::array<double, NN_OUTPUT_SIZE> result{};
 
-    for (size_t i = 0; i < num_rows; ++i) {
-        if (weights[i].size() != num_cols) {
-            throw std::invalid_argument("Matrix is not a rectangle");
-        }
-
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
         double sum = 0.0;
-        for (size_t j = 0; j < num_cols; ++j) {
+        for (size_t j = 0; j < NN_INPUT_SIZE; ++j) {
             sum += static_cast<double>(input_data[j]) * weights[i][j];
         }
         result[i] = sum;
