@@ -55,10 +55,10 @@ int main() {
         std::cout << "========> Iteration : " << current_train << std::endl;
 
         std::cout << "====> Begin to train the model" << std::endl;
-        const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> model = getTrainedModel(dataset_train);
+        const WEIGHT_SHAPE weights = getTrainedModel(dataset_train);
 
         std::cout << "====> Begin evaluation on the test set" << std::endl;
-        history_scores[current_train] = evaluateModel(model, dataset_test);
+        history_scores[current_train] = evaluateModel(weights, dataset_test);
     }
 
     std::cout << "========================================================> Finished exec, results : " << std::endl;
