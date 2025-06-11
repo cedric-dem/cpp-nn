@@ -58,7 +58,7 @@ int main() {
         const WEIGHT_SHAPE weights = getTrainedModel(dataset_train);
 
         std::cout << "====> Begin evaluation on the test set" << std::endl;
-        history_scores[current_train] = evaluateModel(weights, dataset_test);
+        history_scores[current_train] = evaluateModel(weights, dataset_test, false);
     }
 
     std::cout << "========================================================> Finished exec, results : " << std::endl;
