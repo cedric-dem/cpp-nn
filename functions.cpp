@@ -265,7 +265,7 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
     std::cout << "========================================================================================" << std::endl;
 }
 
-double evaluateModel(const NeuralNetwork &model_to_test, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
+double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset, const bool show_confusion_matrix) {
     int good_predictions = 0;
 
     int current_prediction;
@@ -277,7 +277,7 @@ double evaluateModel(const NeuralNetwork &model_to_test, const std::vector<DataP
     for (size_t i = 0; i < dataset.size(); ++i) {
         current_real = dataset[i].label;
 
-        current_prediction = model_to_test.getPrediction(dataset[i].pixels);
+        current_prediction = model.getPrediction(dataset[i].pixels);
 
         if (current_real == current_prediction) {
             good_predictions += 1;
