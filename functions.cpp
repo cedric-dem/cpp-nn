@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <fstream>
@@ -8,7 +9,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <array>
 
 #include "config.h"
 #include "functions.h"
@@ -61,8 +61,8 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
     return data;
 }
 
-std::vector<std::vector<double>> readWeights() {
-    std::vector<std::vector<double>> data;
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> readWeights() {
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> data{};
     std::ifstream file(WEIGHTS_PATH);
 
     if (!file.is_open()) {
@@ -87,7 +87,14 @@ std::vector<std::vector<double>> readWeights() {
         }
 
         if (row.size() == NN_INPUT_SIZE) {
-            data.emplace_back(std::move(row));
+            // data.emplace_back(std::move(row));
+            /*
+            for (int i = 0; i < NN_INPUT_SIZE; i++) {
+                for (int j = 0; j < NN_OUTPUT_SIZE; j++) {
+                    data[i][j] = row[i]; // TODO fix this
+                }
+            }
+            */
         } else {
             std::cerr << "Invalid row length: " << row.size() << " (expected " << NN_INPUT_SIZE << ")" << std::endl;
         }
@@ -116,20 +123,20 @@ void showDatasetElement(const DataPoint &dataset_elem) {
     displayMatrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
 }
 
-std::vector<std::vector<double>> getRandomMatrix(const int a, const int b) {
-    std::vector mat(a, std::vector<double>(b));
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getRandomMatrix() {
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> result{};
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::normal_distribution<> d(0.0, 1.0);
 
-    for (int i = 0; i < a; ++i) {
-        for (int j = 0; j < b; ++j) {
-            mat[i][j] = d(gen);
+    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {    // TO verify
+        for (int j = 0; j < NN_INPUT_SIZE; ++j) { // TO verify
+            result[i][j] = d(gen);
         }
     }
 
-    return mat;
+    return result;
 }
 
 void shuffleDataset(std::vector<DataPoint> &dataset) {
@@ -138,8 +145,9 @@ void shuffleDataset(std::vector<DataPoint> &dataset) {
     std::shuffle(dataset.begin(), dataset.end(), gen);
 }
 
-std::vector<std::vector<double>> getTrainedModel(std::vector<DataPoint> &dataset_train) {
-    std::vector<std::vector<double>> current_weights = getRandomMatrix(NN_OUTPUT_SIZE, NN_INPUT_SIZE);
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getTrainedModel(std::vector<DataPoint> &dataset_train) {
+
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> current_weights = getRandomMatrix();
 
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
@@ -158,18 +166,17 @@ std::vector<std::vector<double>> getTrainedModel(std::vector<DataPoint> &dataset
     return current_weights;
 }
 
-void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, std::vector<std::vector<double>> &current_weights) {
+void batch(const int current_batch_index, const std::vector<DataPoint> &dataset_train, std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights) {
 
     const int start_index = current_batch_index * BATCH_SIZE;
     const int end_index = std::min(((current_batch_index + 1) * BATCH_SIZE), static_cast<int>(dataset_train.size()));
 
-
-    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>  delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
+    std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix = getDeltaMatrix(start_index, end_index, dataset_train, current_weights);
 
     adjustWeights(current_weights, delta_matrix);
 }
 
-void adjustWeights(std::vector<std::vector<double>> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>  &delta_matrix) {
+void adjustWeights(std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &delta_matrix) {
     for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
         for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
             current_weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
@@ -177,11 +184,10 @@ void adjustWeights(std::vector<std::vector<double>> &current_weights, const std:
     }
 }
 
-std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::vector<std::vector<double>> &current_weights) {
+std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &current_weights) {
 
-    //double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
+    // double delta_matrix[NN_OUTPUT_SIZE][NN_INPUT_SIZE] = {0};
     std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> delta_matrix{};
-
 
     int current_real_output;
     for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
@@ -248,13 +254,15 @@ std::vector<double> fBinary(const std::vector<double> &inp) {
     return out;
 }
 
-void saveWeights(const std::vector<std::vector<double>> &model, const std::string &filepath) {
+void saveWeights(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &model, const std::string &filepath) {
     std::ofstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: " << filepath << std::endl;
         return;
     }
 
+    /*
+     // TODO fix since its now not possible to get .size()
     for (const auto &row : model) {
         for (size_t i = 0; i < row.size(); ++i) {
             file << row[i];
@@ -264,15 +272,16 @@ void saveWeights(const std::vector<std::vector<double>> &model, const std::strin
         }
         file << "\n";
     }
+    */
 
     file.close();
     std::cout << "Finished writing weights" << std::endl;
 }
 
-std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
+std::vector<double> multiplyInputVectorWithWeights(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
 
-    const size_t num_rows = weights.size();
-    const size_t num_cols = weights[0].size();
+    const size_t num_rows = NN_OUTPUT_SIZE; // TO Verify
+    const size_t num_cols = NN_INPUT_SIZE;  // TO verify
 
     if (input_data.size() != num_cols) {
         throw std::invalid_argument("Matrix/vector size are incompatible");
@@ -312,14 +321,14 @@ int indexOfMax(const std::vector<double> &output) {
     return max_index;
 }
 
-int getPrediction(const std::vector<uint8_t> &input_data, const std::vector<std::vector<double>> &weights) {
+int getPrediction(const std::vector<uint8_t> &input_data, const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights) {
     // TODO activation function ?
     const std::vector<double> output = multiplyInputVectorWithWeights(input_data, weights);
 
     return indexOfMax(output);
 }
 
-double evaluateModel(const std::vector<std::vector<double>> &weights, const std::vector<DataPoint> &dataset) {
+double evaluateModel(const std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE> &weights, const std::vector<DataPoint> &dataset) {
     int good_predictions = 0;
 
     int current_prediction;

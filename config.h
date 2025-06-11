@@ -7,6 +7,8 @@ constexpr int IMAGE_SIZE = 28;
 constexpr int NN_INPUT_SIZE = 784; // 28x28
 constexpr int NN_OUTPUT_SIZE = 10; // 10 digits
 
+// using weight_type = std::array<std::array<double, NN_INPUT_SIZE>, NN_OUTPUT_SIZE>; //TODO
+
 constexpr int BATCH_SIZE = 64;
 constexpr int EPOCHS_NUMBER = 10;
 constexpr double LEARNING_RATE = 0.001;
