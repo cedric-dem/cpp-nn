@@ -85,11 +85,6 @@ NN_OUTPUT_SHAPE NeuralNetwork::multiplyInputVectorWithWeights(const IMAGE_SHAPE 
     return result;
 }
 
-int NeuralNetwork::getPrediction(const IMAGE_SHAPE &input_data) const {
-    // TODO activation function ?
-    const NN_OUTPUT_SHAPE output = multiplyInputVectorWithWeights(input_data);
-
-    return indexOfMax(output);
-}
+int NeuralNetwork::getPrediction(const IMAGE_SHAPE &input_data) const { return indexOfMax(multiplyInputVectorWithWeights(input_data)); }
 
 WEIGHT_SHAPE NeuralNetwork::getWeights() const { return weights; }
