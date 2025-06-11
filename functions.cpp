@@ -211,21 +211,6 @@ void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
     std::cout << "Finished writing weights" << std::endl;
 }
 
-NN_OUTPUT_SHAPE multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights) {
-
-    NN_OUTPUT_SHAPE result{};
-
-    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        double sum = 0.0;
-        for (size_t j = 0; j < NN_INPUT_SIZE; ++j) {
-            sum += static_cast<double>(input_data[j]) * weights[i][j];
-        }
-        result[i] = sum;
-    }
-
-    return result;
-}
-
 int indexOfMax(const NN_OUTPUT_SHAPE &output) {
     int max_index = 0;
     double max_value = output[0];
