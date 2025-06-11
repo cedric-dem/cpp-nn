@@ -6,6 +6,7 @@
 #include <numeric>
 #include <vector>
 
+#include "DataPoint.h"
 #include "config.h"
 #include "functions.h"
 
@@ -55,10 +56,10 @@ int main() {
         std::cout << "========> Iteration : " << current_train << std::endl;
 
         std::cout << "====> Begin to train the model" << std::endl;
-        const WEIGHT_SHAPE weights = getTrainedModel(dataset_train);
+        const NeuralNetwork model = getTrainedModel(dataset_train);
 
         std::cout << "====> Begin evaluation on the test set" << std::endl;
-        history_scores[current_train] = evaluateModel(weights, dataset_test, false);
+        history_scores[current_train] = evaluateModel(model, dataset_test, false);
     }
 
     std::cout << "========================================================> Finished exec, results : " << std::endl;

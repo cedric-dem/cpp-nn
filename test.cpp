@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "DataPoint.h"
+#include "NeuralNetwork.h"
 #include "config.h"
 #include "functions.h"
 
@@ -16,11 +18,10 @@ int main() {
     // show_dataset_element(dataset_test[19]);
 
     std::cout << "===================> Begin to load weights" << std::endl;
-    const WEIGHT_SHAPE weights = readWeights();
-    std::cout << "=> Finished loading weights, size " << weights.size() << " . " << std::endl;
+    const NeuralNetwork model_to_test = NeuralNetwork(true);
 
     std::cout << "===================> Begin evaluation on the test set" << std::endl;
-    evaluateModel(weights, dataset_test, true);
+    evaluateModel(model_to_test, dataset_test, true);
 
     return 0;
 }
