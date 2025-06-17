@@ -132,14 +132,14 @@ NeuralNetwork getTrainedModel(std::vector<DataPoint> &dataset_train) {
 
     const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
-    std::cout << "==> N batches : " << number_of_batches << std::endl;
+    std::cout << "==> Number of batches : " << number_of_batches << std::endl;
 
     NeuralNetwork this_model = NeuralNetwork(false);
 
     for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
         shuffleDataset(dataset_train);
 
-        std::cout << "=====> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << "<=============" << std::endl;
+        std::cout << "=> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << std::endl;
 
         for (int current_batch_index = 0; current_batch_index < number_of_batches; ++current_batch_index) {
             // std::cout << "=====> current batch : " << current_batch_index << "/" << number_of_batches << std::endl;
@@ -167,7 +167,7 @@ void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
     }
 
     file.close();
-    std::cout << "Finished writing weights" << std::endl;
+    std::cout << "==> Finished writing weights" << std::endl;
 }
 
 int indexOfMax(const NN_OUTPUT_SHAPE &output) {
@@ -235,6 +235,6 @@ double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &d
     }
 
     const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
-    std::cout << "=> good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
+    std::cout << "==> Good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
     return percentage;
 }
