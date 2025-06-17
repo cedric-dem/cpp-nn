@@ -9,7 +9,7 @@ using NN_OUTPUT_SHAPE = std::array<double, NN_OUTPUT_SIZE>;
 using IMAGE_SHAPE = std::array<double, NN_INPUT_SIZE>;
 
 constexpr int BATCH_SIZE = 64;
-constexpr int EPOCHS_NUMBER = 5;
+constexpr int EPOCHS_NUMBER = 2;
 constexpr double LEARNING_RATE = 0.001;
 
 #include <string>

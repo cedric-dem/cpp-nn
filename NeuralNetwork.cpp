@@ -1,15 +1,9 @@
-#include <algorithm>
-#include <array>
-#include <cstdint>
-
 #include <vector>
 
+#include "DataPoint.h"
+#include "NeuralNetwork.h"
 #include "config.h"
 #include "functions.h"
-
-#include "NeuralNetwork.h"
-
-#include "DataPoint.h"
 
 NeuralNetwork::NeuralNetwork(const bool load_weights) {
     if (load_weights) {

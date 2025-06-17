@@ -1,5 +1,6 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+
 #include "DataPoint.h"
 #include "NeuralNetwork.h"
 #include "config.h"
