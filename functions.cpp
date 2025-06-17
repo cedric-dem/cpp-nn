@@ -58,15 +58,6 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
         dp.label = row[0];
         std::copy_n(row.begin() + 1, NN_INPUT_SIZE, dp.pixels.begin());
 
-        for (int p = 0; p < NN_INPUT_SIZE; ++p) { //TODO experiment these
-            // dp.pixels[p] = (dp.pixels[p]-127.5)/127.5;
-            // dp.pixels[p] = 255.0 * (1.0 / (1.0 + std::exp(-dp.pixels[p])));
-            dp.pixels[p] = dp.pixels[p];
-            // dp.pixels[p] = (dp.pixels[p]-33.79)/79.17;
-            // dp.pixels[p] = dp.pixels[p] / 255;
-            // dp.pixels[p] = 1.0 / (1.0 + std::exp(-dp.pixels[p]));
-        }
-
         data.push_back(dp);
     }
 
