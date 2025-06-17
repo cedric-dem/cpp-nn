@@ -1,7 +1,7 @@
 # C++ Signle Layer Perceptron
 
 ## Architecture
-neural network withouthidden layer. the weight matrix is a matrix of size 784x10
+neural network without hidden layer. the weight matrix is a matrix of size 784x10
 
 
 ## Dataset

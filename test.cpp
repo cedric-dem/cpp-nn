@@ -8,16 +8,14 @@
 
 int main() {
 
-    std::cout << "===================> Begin to load dataset" << std::endl;
+    std::cout << "====> Begin to load dataset" << std::endl;
     const std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
-    std::cout << "=> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
+    std::cout << "====> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
-    // show_dataset_element(dataset_test[19]);
-
-    std::cout << "===================> Begin to load weights" << std::endl;
+    std::cout << "====> Begin to load weights" << std::endl;
     const NeuralNetwork model_to_test = NeuralNetwork(true);
 
-    std::cout << "===================> Begin evaluation on the test set" << std::endl;
+    std::cout << "====> Begin evaluation on the test set" << std::endl;
     evaluateModel(model_to_test, dataset_test, true);
 
     return 0;
