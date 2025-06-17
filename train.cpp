@@ -1,7 +1,4 @@
-#include <cstdint>
-#include <fstream>
 #include <iostream>
-#include <string>
 #include <vector>
 
 #include "DataPoint.h"
