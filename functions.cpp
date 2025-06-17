@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -107,22 +106,6 @@ NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
     }
 
     return out;
-}
-
-void displayMatrix(const IMAGE_SHAPE &data, const uint8_t size_a, const uint8_t size_b) {
-
-    for (size_t row = 0; row < size_a; ++row) {
-        for (size_t col = 0; col < size_b; ++col) {
-            std::cout << static_cast<int>(data[row * size_a + col]) << ' ';
-        }
-        std::cout << '\n';
-    }
-}
-
-void showDatasetElement(const DataPoint &dataset_elem) {
-    std::cout << "======> Displaying sample digit " << static_cast<int>(dataset_elem.label) << std::endl;
-
-    displayMatrix(dataset_elem.pixels, IMAGE_SIZE, IMAGE_SIZE);
 }
 
 WEIGHT_SHAPE getRandomMatrix() {
