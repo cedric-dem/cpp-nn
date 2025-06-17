@@ -1,9 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-constexpr double EXECUTIONS_QUANTITY = 10;
-
-constexpr int IMAGE_SIZE = 28;
 constexpr int NN_INPUT_SIZE = 784; // 28x28
 constexpr int NN_OUTPUT_SIZE = 10; // 10 digits
 
