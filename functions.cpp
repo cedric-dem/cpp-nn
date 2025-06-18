@@ -145,23 +145,21 @@ void shuffleDataset(std::vector<DataPoint> &dataset) {
 
 NeuralNetwork getTrainedModel(std::vector<DataPoint> &dataset_train) {
 
-    const int number_of_batches = static_cast<int>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
+    const size_t number_of_batches = static_cast<size_t>(std::ceil(static_cast<double>(dataset_train.size()) / BATCH_SIZE));
 
     std::cout << "==> Number of batches : " << number_of_batches << std::endl;
 
-    NeuralNetwork this_model = NeuralNetwork(false);
+    NeuralNetwork model(false);
 
-    for (int current_epoch = 1; current_epoch <= EPOCHS_NUMBER; ++current_epoch) {
+    for (int epoch = 1; epoch <= EPOCHS_NUMBER; ++epoch) {
         shuffleDataset(dataset_train);
+        std::cout << "=> Epoch " << epoch << "/" << EPOCHS_NUMBER << std::endl;
 
-        std::cout << "=> current Epoch : " << current_epoch << "/" << EPOCHS_NUMBER << std::endl;
-
-        for (int current_batch_index = 0; current_batch_index < number_of_batches; ++current_batch_index) {
-            // std::cout << "=====> current batch : " << current_batch_index << "/" << number_of_batches << std::endl;
-            this_model.doOneBatch(current_batch_index, dataset_train);
+        for (size_t batch_idx = 0; batch_idx < number_of_batches; ++batch_idx) {
+            model.doOneBatch(batch_idx, dataset_train);
         }
     }
-    return this_model;
+    return model;
 }
 
 void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
