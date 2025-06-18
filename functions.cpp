@@ -227,7 +227,7 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
     std::cout << "========================================================================================" << std::endl;
 }
 
-double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
+double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset) {
     size_t good_predictions = 0;
 
     std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> confusion_matrix{};
@@ -247,9 +247,7 @@ double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &d
         }
     }
 
-    if (show_confusion_matrix) {
-        displayConfusionMatrix(confusion_matrix, dataset.size());
-    }
+    displayConfusionMatrix(confusion_matrix, dataset.size());
 
     double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
     std::cout << "==> Good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
