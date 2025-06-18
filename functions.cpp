@@ -188,17 +188,17 @@ void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
 }
 
 int indexOfMax(const NN_OUTPUT_SHAPE &output) {
-    int max_index = 0;
+    size_t max_index = 0;
     double max_value = output[0];
 
-    for (int i = 1; i < NN_OUTPUT_SIZE; ++i) {
+    for (size_t i = 1; i < NN_OUTPUT_SIZE; ++i) {
         if (output[i] > max_value) {
             max_value = output[i];
             max_index = i;
         }
     }
 
-    return max_index;
+    return static_cast<int>(max_index);
 }
 
 void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> &data, const int dataset_size) {
