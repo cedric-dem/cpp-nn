@@ -128,8 +128,8 @@ WEIGHT_SHAPE getRandomMatrix() {
     std::mt19937 gen(rd());
     std::normal_distribution<> d(0.0, 1.0);
 
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        for (int j = 0; j < NN_INPUT_SIZE; ++j) {
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        for (size_t j = 0; j < NN_INPUT_SIZE; ++j) {
             result[i][j] = d(gen);
         }
     }
