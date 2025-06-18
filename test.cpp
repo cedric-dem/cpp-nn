@@ -9,7 +9,7 @@
 int main() {
 
     std::cout << "====> Begin to load dataset" << std::endl;
-    const std::vector<DataPoint> dataset_test = readDataset(DATASET_TEST_PATH);
+    const std::vector<DataPoint> dataset_test = readDataset(config::DATASET_TEST_PATH);
     std::cout << "====> Finished loading test set, size " << dataset_test.size() << " . " << std::endl;
 
     std::cout << "====> Begin to load weights" << std::endl;

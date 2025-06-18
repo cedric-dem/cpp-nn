@@ -9,7 +9,7 @@
 int main() {
 
     std::cout << "====> Begin to load dataset" << std::endl;
-    std::vector<DataPoint> dataset_train = readDataset(DATASET_TRAIN_PATH);
+    std::vector<DataPoint> dataset_train = readDataset(config::DATASET_TRAIN_PATH);
     std::cout << "====> Finished loading train set, size " << dataset_train.size() << " . " << std::endl;
 
     std::cout << "====> Begin to train the model" << std::endl;
