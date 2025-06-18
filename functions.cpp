@@ -12,8 +12,7 @@
 #include "config.h"
 #include "functions.h"
 
-
-bool parseLine(const std::string& line, DataPoint& outDataPoint) {
+bool parseLine(const std::string &line, DataPoint &outDataPoint) {
     std::stringstream ss(line);
     std::string value;
     std::vector<uint8_t> row;
@@ -27,18 +26,17 @@ bool parseLine(const std::string& line, DataPoint& outDataPoint) {
                 return false;
             }
             row.push_back(static_cast<uint8_t>(num));
-        } catch (const std::invalid_argument& e) {
+        } catch (const std::invalid_argument &e) {
             std::cerr << "Invalid number: " << value << std::endl;
             return false;
-        } catch (const std::out_of_range& e) {
+        } catch (const std::out_of_range &e) {
             std::cerr << "Number too large: " << value << std::endl;
             return false;
         }
     }
 
     if (row.size() != NN_INPUT_SIZE + 1) {
-        std::cerr << "Incorrect number of values in line: expected "
-                  << NN_INPUT_SIZE + 1 << ", got " << row.size() << std::endl;
+        std::cerr << "Incorrect number of values in line: expected " << NN_INPUT_SIZE + 1 << ", got " << row.size() << std::endl;
         return false;
     }
 
@@ -47,7 +45,7 @@ bool parseLine(const std::string& line, DataPoint& outDataPoint) {
     return true;
 }
 
-std::vector<DataPoint> readDataset(const std::string& filepath) {
+std::vector<DataPoint> readDataset(const std::string &filepath) {
     std::vector<DataPoint> data;
     std::ifstream file(filepath);
 
@@ -71,7 +69,7 @@ std::vector<DataPoint> readDataset(const std::string& filepath) {
     return data;
 }
 
-bool parseWeightLine(const std::string& line, size_t row, std::array<double, NN_INPUT_SIZE>& outRow) {
+bool parseWeightLine(const std::string &line, size_t row, std::array<double, NN_INPUT_SIZE> &outRow) {
     std::stringstream ss(line);
     std::string cell;
     size_t col = 0;
@@ -79,10 +77,10 @@ bool parseWeightLine(const std::string& line, size_t row, std::array<double, NN_
     while (std::getline(ss, cell, ',') && col < NN_INPUT_SIZE) {
         try {
             outRow[col] = std::stod(cell);
-        } catch (const std::invalid_argument&) {
+        } catch (const std::invalid_argument &) {
             std::cerr << "Invalid value at [" << row << "][" << col << "]: '" << cell << "'\n";
             outRow[col] = 0.0;
-        } catch (const std::out_of_range&) {
+        } catch (const std::out_of_range &) {
             std::cerr << "Out-of-range value at [" << row << "][" << col << "]: '" << cell << "'\n";
             outRow[col] = 0.0;
         }
@@ -114,15 +112,12 @@ WEIGHT_SHAPE readWeights() {
     return data;
 }
 
-
-
 NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
     NN_OUTPUT_SHAPE out{};
-
-    for (int i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        out[i] = 1.0 / (1.0 + std::exp(-inp[i]));
+    for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
+        double x = std::clamp(inp[i], -500.0, 500.0); // anti-overflow
+        out[i] = 1.0 / (1.0 + std::exp(-x));
     }
-
     return out;
 }
 
