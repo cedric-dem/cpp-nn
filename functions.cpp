@@ -201,24 +201,25 @@ int indexOfMax(const NN_OUTPUT_SHAPE &output) {
     return static_cast<int>(max_index);
 }
 
-void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> &data, const int dataset_size) {
+void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> &data, size_t dataset_size) {
     std::cout << "=================================== Confusion Matrix ===================================" << std::endl;
 
     // Display top banner with real answers
     std::cout << "********************************** Predicted by the model ****************************" << std::endl << "     ";
     for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        std::cout << i << "       ";
+        std::cout << std::setw(7) << i;
     }
     std::cout << std::endl;
 
-    // Matrix itself
     for (size_t i = 0; i < NN_OUTPUT_SIZE; ++i) {
-        std::cout << "   Real   "[i] << " " << "0123456789"[i] << "  ";
+        std::cout << std::setw(7) << ("Real " + std::to_string(i));
         for (size_t j = 0; j < NN_OUTPUT_SIZE; ++j) {
             if (data[i][j] > 0) {
-                std::cout << std::fixed << std::setprecision(2) << 100.0 * static_cast<double>(data[i][j]) / dataset_size << "%   ";
+                double percent = 100.0 * data[i][j] / static_cast<double>(dataset_size);
+                std::cout << std::setw(7) << std::fixed << std::setprecision(2) << percent << "%";
+
             } else {
-                std::cout << "        ";
+                std::cout << std::setw(7) << "   -----";
             }
         }
         std::cout << std::endl;
