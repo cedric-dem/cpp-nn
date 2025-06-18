@@ -12,7 +12,42 @@
 #include "config.h"
 #include "functions.h"
 
-std::vector<DataPoint> readDataset(const std::string &filepath) {
+
+bool parseLine(const std::string& line, DataPoint& outDataPoint) {
+    std::stringstream ss(line);
+    std::string value;
+    std::vector<uint8_t> row;
+    row.reserve(NN_INPUT_SIZE + 1);
+
+    while (std::getline(ss, value, ',')) {
+        try {
+            unsigned int num = std::stoul(value);
+            if (num > 255) {
+                std::cerr << "Value out of range (0–255): " << num << std::endl;
+                return false;
+            }
+            row.push_back(static_cast<uint8_t>(num));
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid number: " << value << std::endl;
+            return false;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Number too large: " << value << std::endl;
+            return false;
+        }
+    }
+
+    if (row.size() != NN_INPUT_SIZE + 1) {
+        std::cerr << "Incorrect number of values in line: expected "
+                  << NN_INPUT_SIZE + 1 << ", got " << row.size() << std::endl;
+        return false;
+    }
+
+    outDataPoint.label = row[0];
+    std::copy_n(row.begin() + 1, NN_INPUT_SIZE, outDataPoint.pixels.begin());
+    return true;
+}
+
+std::vector<DataPoint> readDataset(const std::string& filepath) {
     std::vector<DataPoint> data;
     std::ifstream file(filepath);
 
@@ -22,50 +57,45 @@ std::vector<DataPoint> readDataset(const std::string &filepath) {
     }
 
     std::string line;
-    std::getline(file, line); // ignore header
+    std::getline(file, line); // Skip header
 
     while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        std::string value;
-        std::vector<uint8_t> row;
-        row.reserve(NN_INPUT_SIZE + 1); // label + pixels
-
-        while (std::getline(ss, value, ',')) {
-            try {
-                unsigned int num = std::stoul(value);
-                if (num > 255) {
-                    std::cerr << "Value not in interval" << num << std::endl;
-                    row.clear();
-                    break;
-                }
-                row.push_back(static_cast<uint8_t>(num));
-            } catch (...) {
-                std::cerr << "Invalid value " << value << std::endl;
-                row.clear();
-                break;
-            }
-        }
-
-        if (row.size() != NN_INPUT_SIZE + 1) {
-            std::cerr << "Invalid line length " << row.size() << std::endl;
-            continue;
-        }
-
         DataPoint dp;
-        dp.label = row[0];
-        std::copy_n(row.begin() + 1, NN_INPUT_SIZE, dp.pixels.begin());
-
-        data.push_back(dp);
+        if (parseLine(line, dp)) {
+            data.push_back(dp);
+        } else {
+            std::cerr << "Skipping malformed line." << std::endl;
+        }
     }
 
     return data;
+}
+
+bool parseWeightLine(const std::string& line, size_t row, std::array<double, NN_INPUT_SIZE>& outRow) {
+    std::stringstream ss(line);
+    std::string cell;
+    size_t col = 0;
+
+    while (std::getline(ss, cell, ',') && col < NN_INPUT_SIZE) {
+        try {
+            outRow[col] = std::stod(cell);
+        } catch (const std::invalid_argument&) {
+            std::cerr << "Invalid value at [" << row << "][" << col << "]: '" << cell << "'\n";
+            outRow[col] = 0.0;
+        } catch (const std::out_of_range&) {
+            std::cerr << "Out-of-range value at [" << row << "][" << col << "]: '" << cell << "'\n";
+            outRow[col] = 0.0;
+        }
+        ++col;
+    }
+
+    return col == NN_INPUT_SIZE;
 }
 
 WEIGHT_SHAPE readWeights() {
     WEIGHT_SHAPE data{};
 
     std::ifstream file(WEIGHTS_PATH);
-
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << WEIGHTS_PATH << std::endl;
         return data;
@@ -75,26 +105,16 @@ WEIGHT_SHAPE readWeights() {
     size_t row = 0;
 
     while (std::getline(file, line) && row < NN_OUTPUT_SIZE) {
-        std::stringstream ss(line);
-        std::string cell;
-        size_t col = 0;
-
-        while (std::getline(ss, cell, ',') && col < NN_INPUT_SIZE) {
-            try {
-                data[row][col] = std::stod(cell);
-            } catch (const std::invalid_argument &e) {
-                std::cerr << "Error, location ; " << row << " ; " << col << ": '" << cell << "'\n";
-                data[row][col] = 0.0;
-            }
-            ++col;
+        if (!parseWeightLine(line, row, data[row])) {
+            std::cerr << "Warning: Line " << row << " has incorrect number of columns.\n";
         }
-
         ++row;
     }
 
-    file.close();
     return data;
 }
+
+
 
 NN_OUTPUT_SHAPE sigmoid(const NN_OUTPUT_SHAPE &inp) {
     NN_OUTPUT_SHAPE out{};
