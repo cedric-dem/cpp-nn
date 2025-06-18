@@ -43,8 +43,8 @@ WEIGHT_SHAPE NeuralNetwork::getDeltaMatrix(size_t start_index, size_t end_index,
 }
 
 void NeuralNetwork::adjustWeights(const WEIGHT_SHAPE &delta_matrix) {
-    for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-        for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+    for (size_t current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+        for (size_t current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
             weights[current_digit][current_weight_index] += delta_matrix[current_digit][current_weight_index];
         }
     }
