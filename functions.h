@@ -5,10 +5,10 @@
 #include "NeuralNetwork.h"
 #include "config.h"
 
-bool parseLine(const std::string& line, DataPoint& outDataPoint);
+bool parseLine(const std::string &line, DataPoint &outDataPoint);
 std::vector<DataPoint> readDataset(const std::string &filepath);
 
-bool parseWeightLine(const std::string& line, size_t row, std::array<double, NN_INPUT_SIZE>& outRow);
+bool parseWeightLine(const std::string &line, size_t row, std::array<double, NN_INPUT_SIZE> &outRow);
 WEIGHT_SHAPE readWeights();
 
 void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath);
