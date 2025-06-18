@@ -93,9 +93,9 @@ bool parseWeightLine(const std::string &line, size_t row, std::array<double, NN_
 WEIGHT_SHAPE readWeights() {
     WEIGHT_SHAPE data{};
 
-    std::ifstream file(WEIGHTS_PATH);
+    std::ifstream file(config::WEIGHTS_PATH);
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << WEIGHTS_PATH << std::endl;
+        std::cerr << "Failed to open file: " << config::WEIGHTS_PATH << std::endl;
         return data;
     }
 

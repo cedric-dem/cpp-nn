@@ -13,7 +13,7 @@ NeuralNetwork::NeuralNetwork(const bool load_weights) {
     }
 }
 
-void NeuralNetwork::doOneBatch(const int current_batch_index, const std::vector<DataPoint> &dataset_train) {
+void NeuralNetwork::doOneBatch(const size_t current_batch_index, const std::vector<DataPoint> &dataset_train) {
     const size_t start_index = static_cast<size_t>(current_batch_index) * BATCH_SIZE;
     const size_t end_index = std::min(static_cast<size_t>(current_batch_index + 1) * BATCH_SIZE, dataset_train.size());
 
