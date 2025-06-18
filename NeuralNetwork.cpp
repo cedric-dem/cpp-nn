@@ -21,32 +21,21 @@ void NeuralNetwork::doOneBatch(const int current_batch_index, const std::vector<
     adjustWeights(delta_matrix);
 }
 
-WEIGHT_SHAPE NeuralNetwork::getDeltaMatrix(const int start_index, const int end_index, const std::vector<DataPoint> &dataset_train) const {
+WEIGHT_SHAPE NeuralNetwork::getDeltaMatrix(size_t start_index, size_t end_index, const std::vector<DataPoint> &dataset_train) const {
     WEIGHT_SHAPE delta_matrix{};
 
-    int current_real_output;
-    for (int current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
-
-        // input data
-        IMAGE_SHAPE x = dataset_train[current_datapoint_index].pixels;
-
-        // real answer
+    for (size_t current_datapoint_index = start_index; current_datapoint_index < end_index; ++current_datapoint_index) {
+        const IMAGE_SHAPE &x = dataset_train[current_datapoint_index].pixels;
         const int real_label = dataset_train[current_datapoint_index].label;
 
-        // prediction
         NN_OUTPUT_SHAPE processed_output = sigmoid(multiplyInputVectorWithWeights(x));
 
-        // adjust delta weight
-        for (int current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
-            if (real_label == current_digit) {
-                current_real_output = 1;
-            } else {
-                current_real_output = 0;
-            }
+        for (size_t current_digit = 0; current_digit < NN_OUTPUT_SIZE; ++current_digit) {
+            const int target_output = (real_label == static_cast<int>(current_digit)) ? 1 : 0;
+            const double error_term = LEARNING_RATE * (target_output - processed_output[current_digit]);
 
-            for (int current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
-                // if not good (or always ?)
-                delta_matrix[current_digit][current_weight_index] += LEARNING_RATE * (current_real_output - processed_output[current_digit]) * x[current_weight_index];
+            for (size_t current_weight_index = 0; current_weight_index < NN_INPUT_SIZE; ++current_weight_index) {
+                delta_matrix[current_digit][current_weight_index] += error_term * x[current_weight_index];
             }
         }
     }
