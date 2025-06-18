@@ -165,22 +165,26 @@ NeuralNetwork getTrainedModel(std::vector<DataPoint> &dataset_train) {
 void saveWeights(const WEIGHT_SHAPE &model, const std::string &filepath) {
     std::ofstream file(filepath);
     if (!file.is_open()) {
-        std::cerr << "Error: " << filepath << std::endl;
+        std::cerr << "Error: could not open file " << filepath << std::endl;
         return;
     }
 
     for (const auto &row : model) {
         for (size_t i = 0; i < row.size(); ++i) {
             file << row[i];
-            if (i < row.size() - 1) {
+            if (i + 1 < row.size()) {
                 file << ",";
             }
         }
         file << "\n";
     }
 
-    file.close();
-    std::cout << "==> Finished writing weights" << std::endl;
+    if (!file) {
+        std::cerr << "Error: writing to file " << filepath << " failed." << std::endl;
+        return;
+    }
+
+    std::cout << "==> Finished writing weights to " << filepath << std::endl;
 }
 
 int indexOfMax(const NN_OUTPUT_SHAPE &output) {
