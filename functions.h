@@ -19,7 +19,7 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
 
 NeuralNetwork getTrainedModel(std::vector<DataPoint> &dataset_train);
 NN_OUTPUT_SHAPE multiplyInputVectorWithWeights(const IMAGE_SHAPE &input_data, const WEIGHT_SHAPE &weights);
-double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset, bool show_confusion_matrix);
+double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset);
 
 WEIGHT_SHAPE getRandomMatrix();
 int indexOfMax(const NN_OUTPUT_SHAPE &output);
