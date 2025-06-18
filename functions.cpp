@@ -227,32 +227,32 @@ void displayConfusionMatrix(const std::array<std::array<double, NN_OUTPUT_SIZE>,
     std::cout << "========================================================================================" << std::endl;
 }
 
-double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset, const bool show_confusion_matrix) {
-    int good_predictions = 0;
-
-    int current_prediction;
-    int current_real;
+double evaluateModel(const NeuralNetwork &model, const std::vector<DataPoint> &dataset, bool show_confusion_matrix) {
+    size_t good_predictions = 0;
 
     std::array<std::array<double, NN_OUTPUT_SIZE>, NN_OUTPUT_SIZE> confusion_matrix{};
 
-    // for elem in dataset
-    for (size_t i = 0; i < dataset.size(); ++i) {
-        current_real = dataset[i].label;
-
-        current_prediction = model.getPrediction(dataset[i].pixels);
+    for (const auto &dp : dataset) {
+        const size_t current_real = dp.label;
+        const size_t current_prediction = model.getPrediction(dp.pixels);
 
         if (current_real == current_prediction) {
-            good_predictions += 1;
+            ++good_predictions;
         }
 
-        confusion_matrix[current_real][current_prediction] += 1;
+        if (current_real < NN_OUTPUT_SIZE && current_prediction < NN_OUTPUT_SIZE) {
+            confusion_matrix[current_real][current_prediction] += 1;
+        } else {
+            std::cerr << "Warning: label or prediction out of range: label=" << current_real << ", prediction=" << current_prediction << std::endl;
+        }
     }
 
     if (show_confusion_matrix) {
-        displayConfusionMatrix(confusion_matrix, static_cast<int>(dataset.size()));
+        displayConfusionMatrix(confusion_matrix, dataset.size());
     }
 
-    const double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
+    double percentage = 100.0 * static_cast<double>(good_predictions) / dataset.size();
     std::cout << "==> Good predictions : " << good_predictions << "/" << dataset.size() << " (" << std::fixed << std::setprecision(2) << percentage << "%)" << std::endl;
+
     return percentage;
 }
